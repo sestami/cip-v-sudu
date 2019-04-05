@@ -1,0 +1,7 @@
+rho=0.762609052683 g/cm^3
+
+element weight concentration
+O 53.41
+Si 36.39
+C 6.77
+N 3.43
