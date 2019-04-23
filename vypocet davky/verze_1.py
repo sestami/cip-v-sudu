@@ -27,6 +27,8 @@ APROXIMACE:
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad, dblquad
+from bethe import *
+#from scipy.constants import N_A
 
 #ROZMERY
 polomer_sudu=54/2 #v cm
@@ -58,7 +60,7 @@ rho_pouzdro=sum(c_pouzdro_list*rho_pouzdro_list) #vychazi moc male, asi to nebud
 rho_vzduch=0.0012 # v g/cm3
 
 #vstupni jednorazova aktivita v Bq
-A_in=10**4
+A_in=10**3
 
 #objemová aktivita v sudu
 a_metry=A_in/V_sud*10**6 #v Bq/m^3
@@ -81,10 +83,38 @@ F=0.1
 #------------------------------------------------------------------------------------------------
 #DAVKA OD ALF
 #sdelena energie cipu od alf z jedne premeny
-E_alfa_1=1/2*(5490+6002+7687) #v keV 
+E_alfa_1=1/2*(5.490+6.002+7.687) #v MeV 
+
+E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
 
 #aktivita není konstantni; tento pripad je relevantni, ten spravny
+
+def dosah_alfa_vzduch(E):
+    '''
+    Input:
+        E(float): kineticka energie [MeV]
+    Output:
+        R(float): dosah ve vzduchu [mm]
+    '''
+    R=3.18*E**(3/2)
+    return R
+
+def dosah_alfa_libovolnaLatka(E,rho,A_r):
+    '''
+    Input:
+        rho(float): hustota latky v g/cm^3
+        A_r(float): relativni atomova hmotnost
+    Output:
+        R_X(float): dosah v dane latce, urcen s relativni chybou +-15 %
+    '''
+    return 0.3*dosah_alfa_vzduch(E)/rho*np.sqrt(A_r)
+
+#Novy pristup
 def D_alfa(t):
+    return 0
+
+#Puvodni pristup
+def D_alfa_puvodni(t):
     '''
     TO DO:
         Braggova krivka pro alfy (dosah alf)
@@ -92,21 +122,32 @@ def D_alfa(t):
     Output:
         davka od alf pri promenne aktivite, v Gy
     '''
-    E_alfa=E_alfa_1*a*V_cip*(1-np.exp(-l0*t))/l0*1.6*10**(-16)
+    E_alfa=E_alfa_1*a*V_cip*(1-np.exp(-l0*t))/l0*1.6*10**(-13)
     return E_alfa/m_cip
 
-DAlfa=D_alfa(T_jeden_den) #v Gy/(den)
-
-def kontrola_linearity_davkoveho_integralu():
-    casy=np.array([i*24*60*60 for i in np.arange(1,3*32,5)])
-    D=D_alfa(casy)
-    plt.plot(casy/60/60/24,D/a_metry*casy,'x',label='davkovy integral vztahnuty na (bq/m^3)/den')
+def vyvoj_aktivity_a_integralu_aktivity():
+    '''
+    - kdyz se to da jenom v ramci jednoho dne, tak to linearni vubec neni
+    - v ramci tri mesicu ano
+    '''
+    casy=np.array([i*24*60*60 for i in np.arange(1,10*3.82,2)])
+#    D=D_alfa(casy)
+    plt.figure()
+    plt.plot(casy/60/60/24,a*V_sud*(1-np.exp(-l0*casy))/l0,'x',label='integral aktivity v sudu')
     plt.xlabel('[dny]')
-    plt.ylabel(r'$\left[\frac{Gy\cdot den}{Bq/m^3}\right]$')
+    plt.ylabel(r'$\int_0^T A dt$ [Bq$\cdot$s]')
     plt.grid()
     plt.legend()
     plt.show()
-
+    
+    plt.figure()
+    plt.plot(casy/60/60/24,a*V_sud*np.exp(-l0*casy),'x',label='vyvoj aktivity v sudu')
+    plt.xlabel('[dny]')
+    plt.ylabel(r'$A$ [Bq]')
+    plt.grid()
+    plt.legend()
+    plt.show()
+    
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
 #DAVKA OD GAMY
@@ -117,7 +158,7 @@ def kontrola_linearity_davkoveho_integralu():
 '''
 #korekce na geometrii, cip bereme jako kouli o polomeru 3 mm, L je vzdalenost od cipu
 r_cip=0.3 # aproximace rozmeru cipu jako kouli, toto je jeji polomer v cm
-r_pouzdro=1 #v cm
+r_pouzdro=0.31 #v cm
 def geometrie_gama(r,z,mu):
     '''
     Input:
@@ -182,6 +223,8 @@ def I_sud(mu, f=geometrie_gama):
     I_2=2*np.array(I_2_h) #dve podstavy; nezahrnuje plosnou aktivitu na podstavach; je to pro jednotkovou aktivitu
     
     I=a*V_sud/S_sud*(I_1+I_2) # prenasobenim objemem ziskame aktivitu, podelenim plochou ziskame plosnou aktivitu
+    #je to trochu zvlastni, kdyz tam nevystupuje to F uz tady... ale melo by to byt dobre, protoze se s nim pocita
+    #   v gama_zpracovani
     return S_sud/(S_sud+S_pouzdro)*I[0]
 
 def I_pouzdro(mu):
@@ -206,7 +249,7 @@ def gama_zpracovani(I_fce, F):
     '''
     I_dcery=np.array([I_fce(mu*rho_vzduch) for mu in mu_list[1:]]) #aktivita v cipu pro jednotkovou objemovou aktivitu
     A_dcery=np.array([F*Y*I_dcery[i] for i,Y in enumerate(Y_list[1:])]) #a musi byt v Bq/cm^3 !!!; zahrnuje vytezek, integral pres objem sudu
-    A_deponovane=[A_dcery[0]*(1-np.exp(-absCoeff*rho_cip*2*r_cip)) for i,absCoeff in enumerate(absCoeff_list[1:])]
+    A_deponovane=np.array([A_dcery[i]*(1-np.exp(-absCoeff*rho_cip*2*r_cip)) for i,absCoeff in enumerate(absCoeff_list[1:])])
     #ZANEDBAVAM ZESLABENI V POUZDRU!!!
     #A_sum=np.sum(A_list)
     return A_deponovane*E_list[1:]
@@ -231,8 +274,6 @@ def D_gama(t):
     E_celkove=(E_Rn+np.sum(E_vzduch+E_sud+E_pouzdro))*1.6*10**(-16)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
     return E_celkove/m_cip
 
-DGama=D_gama(T_jeden_den)
-
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
 #DAVKA OD BETY
@@ -245,12 +286,10 @@ DGama=D_gama(T_jeden_den)
  
 '''
 
-
 #vstupni udaje
-E_endpoints=np.array([672,729,1542,3272]) #v keV
+E_endpoints=np.array([672,729,1520,3272]) #v keV
 E_middle=1/2*E_endpoints #overit
 Y_list_beta=np.array([50,43,35,18.2])/100
-
 
 def soucinitel_absorpce(E_max, rho):
     return 22*E_max**(-4/3)/rho
@@ -264,15 +303,19 @@ def beta_zpracovani(I_fce, F):
     Output:
         energie deponovana od beta zareni dcer v cipu v keV
     Predpoklady:
-        od kazde castice se deponuje energie rovna jedne desetine maximalni energie daneho beta zareni
+        dva zpusoby:
+            1) od kazde castice se deponuje energie rovna jedne desetine maximalni energie daneho beta zareni
+            2) jako u gamy, energie deponovana od jedne absorbovane castice se bere jedna desetina max. 
+               energie dane bety
     '''
     I_dcery_po_vzduchu=np.array([I_fce(mu*rho_vzduch) for mu in mu_list_beta]) #aktivita dosla na povrch pouzdra
     I_dcery=np.array([I_0*np.exp(-mu_list_beta[i]*rho_pouzdro) for i,I_0 in enumerate(I_dcery_po_vzduchu)]) #aktivita v cipu pro jednotkovou objemovou aktivitu
     A_dcery=np.array([F*Y*I_dcery[i] for i,Y in enumerate(Y_list_beta)]) #a musi byt v Bq/cm^3 !!!; zahrnuje vytezek, integral pres objem sudu
-    A_deponovane=A_dcery #uvazuji, ze to, co se dostalo do cipu, se plne deponuje
-    #ZANEDBAVAM ZESLABENI V POUZDRU!!!
-    #A_sum=np.sum(A_list)
-    return A_deponovane*E_endpoints*1/10
+    #1) to, co se dostalo do cipu, se plne deponuje
+    A_deponovane=A_dcery 
+    #2) viz v popisu funkce
+#    A_deponovane=np.array([A_dcery[i]*(1-np.exp(-absCoeff*rho_cip*2*r_cip)) for i,absCoeff in enumerate(mu_list_beta)])
+    return A_deponovane*1/10*E_endpoints
 
 def D_beta(t):
     '''
@@ -294,12 +337,20 @@ def D_beta(t):
     E_celkove=np.sum(E_vzduch+E_sud+E_pouzdro)*1.6*10**(-16)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
     return E_celkove/m_cip
 
-DBeta=D_beta(T_jeden_den)
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#CELKOVE
+def soucet_prispevku(t):
+    DAlfa=D_alfa(t)
+    DBeta=D_beta(t)
+    DGama=D_gama(t)
+    print('DAlfa = '+str(DAlfa))
+    print('DBeta = '+str(DBeta))
+    print('DGama = '+str(DGama))
+    DCelkova=sum([DAlfa,DBeta,DGama])
+    print('\nDCelkova = '+str(DCelkova*10**6)+' uGy')
+    return DCelkova
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
 #OUTPUT
-DCelkova=sum([DAlfa,DBeta,DGama])
-print('DAlfa = '+str(DAlfa))
-print('DBeta = '+str(DBeta))
-print('DGama = '+str(DGama))
-print('\nDCelkova = '+str(DCelkova*10**6)+' uGy')
+DCelkova=soucet_prispevku(T_jeden_den)
