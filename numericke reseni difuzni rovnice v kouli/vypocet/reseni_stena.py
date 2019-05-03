@@ -233,7 +233,6 @@ def animace(vysledek,c_u, c_v,tau,k,prostredi,interval=1,jmeno=0):
                                 interval=interval, blit=True, repeat=False)
     if jmeno:
         anim.save(jmeno+'.mp4', fps=30, extra_args=['-vcodec', 'libx264'])
-    # plt.show()
     return anim
     
 def animace_obe_D(vysledek,c_u, c_v,tau,k,interval=1,ulozit=False):

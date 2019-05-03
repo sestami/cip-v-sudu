@@ -33,6 +33,64 @@ w_N=3.43/100
 #    E_alfa=E_alfa_1*a*V_cip*t*1.6*10**(-16)
 #    return E_alfa/m_cip
 
+#def dosah_alfa_vzduch(E):
+#    '''
+#    Input:
+#        E(float): kineticka energie [MeV]
+#    Output:
+#        R(float): dosah ve vzduchu [mm]
+#    '''
+#    R=3.18*E**(3/2)
+#    return R
+#
+#def dosah_alfa_libovolnaLatka(E,rho,A_r):
+#    '''
+#    Input:
+#        rho(float): hustota latky v g/cm^3
+#        A_r(float): relativni atomova hmotnost
+#    Output:
+#        R_X(float): dosah v dane latce, urcen s relativni chybou +-15 %
+#    '''
+#    return 0.3*dosah_alfa_vzduch(E)/rho*np.sqrt(A_r)
+#
+##Puvodni pristup
+#E_alfa_1=1/2*(5.490+6.002+7.687) #v MeV
+#def D_alfa_puvodni(t):
+#    '''
+#    TO DO:
+#        Braggova krivka pro alfy (dosah alf)
+#        pridat prispevky dcer posazenych na pouzdru (a vypocitat podil alf ktere do cipu doleti)
+#    Output:
+#        davka od alf pri promenne aktivite, v Gy
+#    '''
+#    E_alfa=E_alfa_1*a*V_cip*(1-np.exp(-l0*t))/l0*1.6*10**(-13)
+#    return E_alfa/m_cip
+
+
+
+#def vyvoj_aktivity_a_integralu_aktivity():
+#    '''
+#    - kdyz se to da jenom v ramci jednoho dne, tak to linearni vubec neni
+#    - v ramci tri mesicu ano
+#    '''
+#    casy=np.array([i*24*60*60 for i in np.arange(1,10*3.82,2)])
+##    D=D_alfa(casy)
+#    plt.figure()
+#    plt.plot(casy/60/60/24,a*V_sud*(1-np.exp(-l0*casy))/l0,'x',label='integral aktivity v sudu')
+#    plt.xlabel('[dny]')
+#    plt.ylabel(r'$\int_0^T A dt$ [Bq$\cdot$s]')
+#    plt.grid()
+#    plt.legend()
+#    plt.show()
+#    
+#    plt.figure()
+#    plt.plot(casy/60/60/24,a*V_sud*np.exp(-l0*casy),'x',label='vyvoj aktivity v sudu')
+#    plt.xlabel('[dny]')
+#    plt.ylabel(r'$A$ [Bq]')
+#    plt.grid()
+#    plt.legend()
+#    plt.show()
+    
 
 #aproximace funkce pro vypocteni geometrickeho integralu
 #L=np.linspace(3,400,num=1000)

@@ -1,0 +1,9 @@
+\babel@toc {czech}{}
+\contentsline {section}{\numberline {1}\IeC {\'U}vod}{1}{section.1}
+\contentsline {section}{\numberline {2}\IeC {\'U}lohy}{1}{section.2}
+\contentsline {section}{\numberline {3}Dif\IeC {\'u}ze radonu do \IeC {\v c}ipu skrze pouzdro}{2}{section.3}
+\contentsline {subsection}{\numberline {3.1}Popis dif\IeC {\'u}zn\IeC {\'\i }ho \IeC {\v s}\IeC {\'\i }\IeC {\v r}en\IeC {\'\i }}{2}{subsection.3.1}
+\contentsline {subsection}{\numberline {3.2}Sou\IeC {\v c}initel dif\IeC {\'u}ze a rozm\IeC {\v e}ry pouzdra}{2}{subsection.3.2}
+\contentsline {subsection}{\numberline {3.3}Numerick\IeC {\'e} \IeC {\v r}e\IeC {\v s}en\IeC {\'\i } dif\IeC {\'u}zn\IeC {\'\i } rovnice}{2}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.4}Osnova (pro m\IeC {\v e})}{3}{subsection.3.4}
+\contentsline {section}{\numberline {4}V\IeC {\'y}po\IeC {\v c}et d\IeC {\'a}vky absorbovan\IeC {\'e} v \IeC {\v c}ipu}{4}{section.4}

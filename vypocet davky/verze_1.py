@@ -27,7 +27,8 @@ APROXIMACE:
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad, dblquad
-from bethe import *
+from konstanty import *
+#from bethe import *
 #from scipy.constants import N_A
 
 #ROZMERY
@@ -57,7 +58,7 @@ w_pouzdro_list=np.array([53.41,36.39,6.77,3.43])/100
 rho_pouzdro=sum(c_pouzdro_list*rho_pouzdro_list) #vychazi moc male, asi to nebude spravne
 
 #hustota vzduchu
-rho_vzduch=0.0012 # v g/cm3
+#rho_vzduch=0.0012 # v g/cm3
 
 #vstupni jednorazova aktivita v Bq
 A_in=10**3
@@ -83,82 +84,32 @@ F=0.1
 #------------------------------------------------------------------------------------------------
 #DAVKA OD ALF
 #sdelena energie cipu od alf z jedne premeny
-E_alfa_1=1/2*(5.490+6.002+7.687) #v MeV 
+ 
 
 E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
 
 #aktivita není konstantni; tento pripad je relevantni, ten spravny
 
-def dosah_alfa_vzduch(E):
-    '''
-    Input:
-        E(float): kineticka energie [MeV]
-    Output:
-        R(float): dosah ve vzduchu [mm]
-    '''
-    R=3.18*E**(3/2)
-    return R
-
-def dosah_alfa_libovolnaLatka(E,rho,A_r):
-    '''
-    Input:
-        rho(float): hustota latky v g/cm^3
-        A_r(float): relativni atomova hmotnost
-    Output:
-        R_X(float): dosah v dane latce, urcen s relativni chybou +-15 %
-    '''
-    return 0.3*dosah_alfa_vzduch(E)/rho*np.sqrt(A_r)
-
 #Novy pristup
 def D_alfa(t):
-    return 0
-
-#Puvodni pristup
-def D_alfa_puvodni(t):
-    '''
-    TO DO:
-        Braggova krivka pro alfy (dosah alf)
-        pridat prispevky dcer posazenych na pouzdru (a vypocitat podil alf ktere do cipu doleti)
-    Output:
-        davka od alf pri promenne aktivite, v Gy
-    '''
-    E_alfa=E_alfa_1*a*V_cip*(1-np.exp(-l0*t))/l0*1.6*10**(-13)
-    return E_alfa/m_cip
-
-def vyvoj_aktivity_a_integralu_aktivity():
-    '''
-    - kdyz se to da jenom v ramci jednoho dne, tak to linearni vubec neni
-    - v ramci tri mesicu ano
-    '''
-    casy=np.array([i*24*60*60 for i in np.arange(1,10*3.82,2)])
-#    D=D_alfa(casy)
-    plt.figure()
-    plt.plot(casy/60/60/24,a*V_sud*(1-np.exp(-l0*casy))/l0,'x',label='integral aktivity v sudu')
-    plt.xlabel('[dny]')
-    plt.ylabel(r'$\int_0^T A dt$ [Bq$\cdot$s]')
-    plt.grid()
-    plt.legend()
-    plt.show()
+    I_E=np.array([3.16382145, 4.1016981 , 8.35864858]) #ze skriptu bethe, z fce vypocet_alfa
+    E=sum(I_E)*(1-F)*a
     
-    plt.figure()
-    plt.plot(casy/60/60/24,a*V_sud*np.exp(-l0*casy),'x',label='vyvoj aktivity v sudu')
-    plt.xlabel('[dny]')
-    plt.ylabel(r'$A$ [Bq]')
-    plt.grid()
-    plt.legend()
-    plt.show()
-    
+    E_celkove=(E+1/2*sum(E_alfa)*a*V_cip)*1.6*10**(-13)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
+    return E_celkove/m_cip
+
+
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
 #DAVKA OD GAMY
 '''
 - cip i jeho pouzdro aproximujeme koulemi, to by melo davku nadhodnocovat; tuto aproximaci provadime u 
-  prispevku od gamy a u prispevku od bety 
+  prispevku od gamy a u prispevku od bety; uz i u alfy
 - mozna je lepsi zanedbat tloustku cipu a pocitat s nim jako ze je to deska
 '''
 #korekce na geometrii, cip bereme jako kouli o polomeru 3 mm, L je vzdalenost od cipu
-r_cip=0.3 # aproximace rozmeru cipu jako kouli, toto je jeji polomer v cm
-r_pouzdro=0.31 #v cm
+#r_cip=0.3 # aproximace rozmeru cipu jako kouli, toto je jeji polomer v cm
+#r_pouzdro=0.31 #v cm
 def geometrie_gama(r,z,mu):
     '''
     Input:
@@ -194,6 +145,8 @@ def I_vzduch(mu, f=geometrie_gama): # I jako integral
     '''
     Input:
         mu(int): linearni (!!!) sounicitel zeslabeni/absorpce (gama/beta)
+    Output:
+        integral poctu gam, ktere dosly k cipu (vzduchem)
     '''
     f_mu = lambda r, z: f(r,z,mu)
     I_h=dblquad(f_mu, r_pouzdro, polomer_sudu, lambda x: r_pouzdro, lambda x: vyska_sudu/2)
@@ -237,7 +190,7 @@ def I_pouzdro(mu):
     return S_pouzdro/(S_pouzdro+S_sud)*(a*V_sud)*1/4
 
 #prispevek od radonu
-I_Rn=a*I_vzduch(mu_list[0]*rho_vzduch)
+I_Rn=I_vzduch(mu_list[0]*rho_vzduch)
 A_Rn=Y_list[0]*I_Rn #pojmenovani A jako aktivita je nestastne, protoze se nejedna o aktivitu, ale o emisi gama castic dane energie (511 keV)
 A_Rn_deponovane=A_Rn*(1-np.exp(-absCoeff_list[0]*rho_cip*2*r_cip))
 E_Rn=A_Rn_deponovane*E_list[0]

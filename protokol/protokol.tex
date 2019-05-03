@@ -1,0 +1,96 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage[czech]{babel}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{a4wide}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker = {,}}
+\usepackage[version=4]{mhchem}
+\usepackage[colorlinks=true,urlcolor=black,citecolor=blue]{hyperref}
+%\usepackage{cleveref}
+\author{Michal Šesták}
+\title{Čip v sudu s radonovou atmosférou}
+\begin{document}
+\maketitle	
+\tableofcontents
+\section{Úvod}
+Účelem tohoto experimentu je zkoumání vlivu kosmického záření na chybovost integrovaného obvodu. Kosmické záření je simulováno radonovou atmosférou v plechovém uzemněném sudu válcové geometrie, v jehož středu je čip umístěn. Radonová atmosféra je vytvořena injekcí definované koncentrace radonu do sudu v daný počáteční čas. Kolem čipu jsou umístěny TLD detektory, kterými měříme dávku absorbovanou v čipu. Dále se měří počet chyb zaznamenaných v různých segmentech čipu, např v ADC nebo v paměti. Snahou je zjistit, zdali existuje nějaká závislost počtu chyb v čipu na velikosti absorbované dávky.
+
+Problémem je, že zatímco $\beta$ a $\gamma$ záření je TLD detektory měřeno spolehlivě, u $\alpha$ tomu tak není. Proto se přistoupilo k pokusu o výpočet dávky z jednotlivých složek záření ($\alpha, \beta, \gamma$) pomocí teoretických poznatků. 
+
+Ještě předtím však bylo potřeba ověřit, že radon difunduje do zkoumaného čipu přes vrstvičku materiálu, která ho obklopuje, dostatečně rychle vzhledem k jeho radioaktivní přeměně. Pokud by difundoval mnohem pomaleji než se přeměňuje, pak by dávka (hlavně její část pocházející od alf) byla nižší než v případě, kdy bychom uvažovali stejnou koncentraci radonu v čipu jako v okolním prostředí sudu. Proto byl výpočet dávky rozdělen do dvou úloh.
+\section{Úlohy}
+\begin{enumerate}
+	\item Ověření, zdali radon difunduje k čipu přes vrstvičku materiálu pouzdra dostatečně rychle vzhledem k radioaktivní přeměně radonu v sudu.
+	\item Výpočet dávky absorbované v čipu. Určují se jednotlivě příspěvky od záření $\alpha, \beta, \gamma$.
+\end{enumerate}
+\section{Difúze radonu do čipu skrze pouzdro}
+\subsection{Popis difúzního šíření}
+Průběh šíření radonu difúzí v čase v daném materiálu popsaném difúzním součinitelem $D$ se řídí druhým Fickovým zákonem
+\begin{equation}
+\frac{\partial c}{\partial t}=D\cdot \text{div}(c)\,,\label{eq:fickuvLawObecne}
+\end{equation}
+kde $c=c(t;x,z,y)$ je koncentrace radonu v bodě $(x,y,z)$ v čase $t$, $[c]=\si{Bq/m^3}$; $[D]=\si{m^2s^{-1}}$. 
+
+\subsection{Součinitel difúze a rozměry pouzdra}
+Vzhledem k tomu, že známe pouze prvkové složení pouzdra a nevíme, z jakého materiálu je vyrobeno, tak byl uvažován difúzní součinitel o hodnotě
+\begin{equation}
+D=\SI[parse-numbers = false]{3\cdot 10^{-7}}{m^2s^{-1}}\,,
+\end{equation}
+což by měla být hodnota obvyklá pro pevné látky (zdroj?\footnote{zkusit najít a doplnit}). Čip je rozměrově kvádr o šířce a délce cca 7 mm a tloušťce 0,15 mm. Pouzdro ho obepíná, tj. jedná se také o kvádr. Na bočních stranách čipu je 6,5 až 7 mm materiálu pouzdra, na horní a dolní ploše čipu je ho 0,69 mm. 
+
+\subsection{Numerické řešení difúzní rovnice}
+Řešení rovnice \eqref{eq:fickuvLawObecne} v kartézských souřadnicích při daných rozměrech pouzdra by bylo zbytečně náročné, a proto se přistoupilo k aproximaci čipu koulí o poloměru $R_1$ a pouzdra kulovou slupkou o poloměru $R_2$ a tloušťce $d$. Pak lze rovnici \eqref{eq:fickuvLawObecne} převést do sférických souřadnic $(r, \varphi, \phi)$ s počátkem ve středu aproximujících útvarů:
+\begin{equation}
+\frac{\partial c}{\partial t}=D\left(\frac{\partial^2c}{\partial r^2}+\frac{2}{r}\frac{\partial c}{\partial r}\right)\,,\label{eq:fick}
+\end{equation}
+kde navíc díky homogennosti koncentrace radonu v okolí pouzdra uvažujeme izotropní šíření, tj. nezávislé na souřadnicích $\varphi$ a $\phi$, a proto $c=c(t,r)$. Pro numerickou jednoduchost byly nejprve aproximující parametry položeny hodnotám
+\begin{align}
+	R_1&=\SI{5}{cm}\,,\\
+	R_2&=\SI{10}{cm}\,,\\
+	d=R_2-R_1&=\SI{5}{cm}\,,
+\end{align}
+v případě potřeby by byly zmenšeny. Rovnice \eqref{eq:fick} byla řešena jen uvnitř pouzdra. Byly řešeny dva případy:
+\begin{enumerate}
+	\item v okolí čipu je konstantní koncentrace radonu $c_0$ a uvnitř čipu a pouzdra je v počátečním čase nulová koncentrace, tj.:
+	\begin{itemize}
+		\item počáteční podmínka je $c(0,r)=c_u(0)=0$ pro $r\in(R_1, R_2)$, kde $c_u(t)$ je koncentrace radonu v kouli aproximující čip v blízkosti pouzdra,
+		\item okrajová podmínka na rozhraní pouzdra a okolního prostředí (dále jen vnější okrajová podmínka) je $c(t,R_2)=c_0$ pro $t\in[0,T]$, kde $T$ čas, do kterého chceme rovnici řešit,
+		\item okrajová podmínka na rozhraní pouzdra a čipu (dále jen vnitřní okrajová podmínka) bude uvedena později.
+	\end{itemize}
+	 
+	\item V okolí čipu je nulová koncentrace radonu a uvnitř čipu a pouzdra je koncentrace tentokrát v počátečním čase $c_0$, tedy:
+	\begin{itemize}
+		\item počáteční podmínka je $c(0,r)=c_u(0)=c_0$ pro $r\in[R_1, R_2]$,
+		\item vnější okrajová podmínka je $c(t,R_2)=0$ pro $t\in[0,T]$,
+		\item vnitřní okrajová podmínka bude uvedena později.
+	\end{itemize} 
+\end{enumerate}
+První případ představuje injektáž radonu do sudu s čipem, druhý pak vypumpování radonu ven ze sudu. Vnitřní okrajová podmínka vypadá následovně:
+\begin{equation}
+	D\frac{\partial c(t,R_1)}{\partial r}=h\cdot(c(t,R_1)-c_u(t)\,,\label{eq:vnitrniOkrPodm}
+\end{equation}
+kde $h$ je tzv. přestupní koeficient vyjadřující schopnost přestupu radonu z pouzdra do čipu (nebo naopak), $[h]=\si{m\cdot s^{-1}}$. Koncentrace uvnitř čipu $c_u(t+\Delta t)$ se určí ze známé koncentrace v předchozím bodě časové sítě $c_u(t)$ pomocí vztahů
+\begin{align}
+	E(t)&=h\cdot(c(t,R_1)-c_u(t))\,,\label{eq:exhalace}\\
+	c_u(t+\Delta t)&=c_u(t)\cdot \mathrm{e}^{-\lambda\Delta t}+\frac{E(t)\cdot A}{V\cdot \lambda}\cdot \left(1-\mathrm{e}^{-\lambda\Delta t}\right)\,,\nonumber\\
+	&=c_u(t)\cdot \mathrm{e}^{-\lambda\Delta t}+\frac{3\cdot E(t)}{R_1\cdot \lambda}\cdot \left(1-\mathrm{e}^{-\lambda\Delta t}\right)\,,\label{eq:vnitrek}
+\end{align}
+kde $E(t)$ exhalační rychlost z pouzdra do čipu (či naopak) v čase $t$, $[E]=\si{Bq\cdot m^{-2}s^{-1}}$, dále $\Delta t$ je časový krok, $\lambda$ je přeměnová konstanta radonu, $A=4\pi R_1^2$ je vnější plocha koule reprezentující čip a $V=\frac{4}{3}\pi R_1^3$ je objem této koule. Vztahy \eqref{eq:vnitrniOkrPodm}, \eqref{eq:exhalace} a \eqref{eq:vnitrek} byly převzaty z \cite{jiranek1}.
+\subsection{Osnova (pro mě)}
+\begin{itemize}
+	\item Předpoklady (hodnota difúzního součinitele)
+	\item Fickův zákon
+	\item Crank-Nicolsonova metoda
+	\item Výsledek
+\end{itemize}
+\section{Výpočet dávky absorbované v čipu}
+
+\begin{thebibliography}{Mm99}
+
+\bibitem{jiranek1} Jiránek M, Fronka A.: New technique for the determination of radon diffusion coefficient in radon-proof membranes. Radiat Prot Dosimetry. 2008;130(1):22-5. doi: 10.1093/rpd/ncn121.
+\end{thebibliography}
+\end{document}

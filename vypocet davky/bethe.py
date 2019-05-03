@@ -1,16 +1,19 @@
+# -*- coding: utf-8 -*-
 """
-Bethe Bloch equation and calculation of energy loss along trajectory
+Created on Fri May  3 10:17:21 2019
 
-author: Bob Wimmer
-date: April 27, 2011
-email: wimmer@physik.uni-kiel.de
-
+@author: michal.sestak
 """
 
 from math import sqrt, log, pi
 from scipy.constants import N_A, epsilon_0, e
 import numpy as np
 from scipy.integrate import quad
+import pandas as pd
+from scipy.interpolate import interp1d
+from konstanty import *
+import time
+
 #Define some natural constants
 
 mp = 1.672621637e-27        #kg
@@ -19,7 +22,7 @@ ma = 6.64465620e-27         #kg, mass of the alfa particle
 qe = e                      #C
 eps0 = epsilon_0            #F/m
 c = 299792458               #m/s
-rho_vzduch = 1.20479        #kg/m^3
+#rho_vzduch = 0.00120479        #g/cm^3
 
 
 #and nnow some problem specific ones
@@ -33,107 +36,133 @@ EB   = 85.7*qe              #85.7 eV in J, i.e., Mean Excitation Energy of Dry A
 
 E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
 
-def dosah_alfa_vzduch(E):
+#def dosah_alfa_vzduch(E):
+#    '''
+#    Input:
+#        E(float): kineticka energie [MeV]
+#    Output:
+#        R(float): dosah ve vzduchu [mm]
+#    '''
+#    R=3.18*E**(3/2)
+#    return R
+#
+#dosah=dosah_alfa_vzduch(E_alfa)*0.1
+
+data=pd.read_csv('ASTAR vzduch.txt', skiprows = 8, sep="\t")
+#databaze=pd.DataFrame([data.loc[:,'E[MeV]'], data.loc[:,'S_total[MeV cm2/g]'], data.loc[:,'CSDARange[g/cm2]']]).T
+
+x = np.asarray(data.loc[:,'E[MeV]'])
+S = np.asarray(data.loc[:,'S_total[MeV cm2/g]'])
+R = np.asarray(data.loc[:,'CSDARange[g/cm2]'])
+
+def find_nearest(Ekin,y,x=x):
     '''
     Input:
-        E(float): kineticka energie [MeV]
+        Ekin(float): energie alfa castice, [MeV]
     Output:
-        R(float): dosah ve vzduchu [mm]
+        dEdx(float): celkova brzdna schopnost, [MeV/cm]
     '''
-    R=3.18*E**(3/2)
-    return R
+    idx = np.abs((Ekin - x)).argmin()
+    if Ekin<x[idx]:
+        x = x[idx-1:idx+1]
+        y = y[idx-1:idx+1]
+        value = interp1d(x, y, kind='linear')(Ekin)
+    elif Ekin>x[idx]:
+        x = x[idx:idx+2]
+        y = y[idx:idx+2]
+        value = interp1d(x, y, kind='linear')(Ekin)
+    elif Ekin==x[idx]:
+        value = y[idx]
+    return value
 
-dosah_alfa=dosah_alfa_vzduch(E_alfa)
+def find_nearest_dEdx(Ekin, y=S):
+    return find_nearest(Ekin, y)*rho_vzduch
 
-def ne():
-    '''
-    electron density in the material
-    '''
-    atomic_number_list = np.array([6, 7, 8, 18])
-    fraction_by_weight = np.array([0.000124, 0.755267, 0.231781, 0.012827])
-    Z_effective        = sum(atomic_number_list*fraction_by_weight)
-    return N_A*Z_effective*rho_vzduch/28.97 #brano z https://physics.nist.gov/cgi-bin/Star/compos.pl?matno=104, https://en.wikipedia.org/wiki/Molar_mass
-    
-ne = ne()
+def find_nearest_R(Ekin, y=R):
+    return find_nearest(Ekin, y)/rho_vzduch
 
-#relativisticky pristup
-def beta(v):
-    return v/c
+dosah_alfa=np.array([find_nearest_R(E) for E in E_alfa])
 
-def gamma(v):               #Lorentz gamma
-    return 1./sqrt(1-v*v/c/c)
 
-def v_of_Ekin_m0_relativisticky(Ekin, m0): #invert kinetic energy, E_kin, for speed, v.
-    b2 = 1.-1./(1.+Ekin/m0/c/c)**2
-    return sqrt(b2)*c
+#def usla_draha(Ekin, fce=find_nearest_dEdx, dx=1e-1):
+#    '''
+#    Input:
+#        Ekin(float): pocatecni kineticka energie v MeV
+#    Output:
+#        x(float): delka projite drahy v cm
+#    '''
+#    x=0         #position in cm
+#    dE=0     #energy loss in MeV
+##    print('Ekin = '+str(round(Ekin, 3))+' MeV, s = '+str(s)+' cm;')
+#    head = 'Delka drahy [cm], E_kin [MeV], S [MeV/cm]'
+#    print(head)
+#    while Ekin > 0:
+#        
+#        dE = fce(Ekin)*dx     #units J/m*dx
+#        x = x+dx
+#        Ekin = Ekin - dE
+##        if dE < 0:
+##            break
+#        print(str(x) + ', ' + str(Ekin) + ', ' + str(dE/dx))
+#    return x
+#
+#s=usla_draha(6)
 
-def dEdx_relativisticky(Ekin,Z1=Z1,m0=ma,EB=EB,ne=ne): #Bethe-Bloch equation
-    '''
-    [J/m]
-    '''
-    v = v_of_Ekin_m0_relativisticky(Ekin, m0)
-    b2 = beta(v)**2
-    C = Z1**2*qe**4/4/pi/eps0**2/me
-    ln_term = log(2.*me*v**2/EB)
-    return C/v**2*ne*(ln_term  - log(1.-b2) - b2)
-
-#nerelativisticky pristup
-def v_of_Ekin_m0(Ekin, m0): #invert kinetic energy, E_kin, for speed, v.
-    return sqrt(2*Ekin/m0)
-
-def dEdx(Ekin,Z1=Z1,m0=ma,EB=EB,ne=ne): #Bethe-Bloch equation
-    '''
-    [J/m]
-    '''
-    v = v_of_Ekin_m0(Ekin, m0)
-    ln_term = log(2*me*v**2/EB)
-    return Z1**2*qe**4/4/pi/eps0**2/me/v**2*ne*ln_term
-
-#aproximujici pristup
-def dEdx_aprox(Ekin,Z1=Z1,m0=ma,EB=EB,ne=ne): #Bethe-Bloch equation
-    '''
-    [J/m]
-    '''
-    v = v_of_Ekin_m0(Ekin, m0)
-    ln_term = log(2*me*v**2/EB)
-    return Z1/me/v**2*rho_vzduch*1/2*ln_term
-
-#Energy loss in first layer
-print(str(dEdx_relativisticky(Ekin)/(qe*1e9)) + ' in MeV/mm')
-print(str(dEdx_relativisticky(Ekin)/(qe*1e8)) + ' in MeV/cm')
-
-#initialize position, energy loss, and dx
-def zbyla_energie(s, Ekin, fce=dEdx_relativisticky, dx=1e-3):
+def zbyla_energie(s, Ekin, fce=find_nearest_dEdx, dx=1e-1):
     '''
     Input:
-        s(float): draha alfa castice ve vzduchu nez dorazi k cipu [m]
+        s(float): draha alfa castice ve vzduchu nez dorazi k cipu [cm]
     Output:
         E_zbyla(float): zbyla energie alfa castice po jejim pruchodu vzduchu po draze dlouhe s
     '''
-    x=0         #position in m
-    dE = 0     #energy loss
-    print('Ekin = '+str(round(Ekin/(qe*1e6), 3))+' MeV, s = '+str(s)+' m;')
-    head = 'Delka drahy [m], E_kin [MeV], S [MeV/cm]'
-    print(head)
-    while x < s:
-        dE = fce(Ekin)*dx     #units J/m*dx
+    x=0         #position in cm
+    dE=0     #energy loss in MeV
+    print('Ekin = '+str(Ekin)+'MeV')
+    print('delka drahy = '+str(s)+' cm')    
+    while True:
         x = x+dx
+        if x > s:
+            break
+        dE = fce(Ekin)*dx     #units MeV/cm*dx
         Ekin = Ekin - dE
         if dE < 0:
+            print('dE vyslo zaporne! dE = '+str(dE))
             break
-    string = str(x) + ', ' + str(Ekin/(qe*1e6)) + ', ' + str(dE/(qe*1.e8)/dx) + '\n'
-    print(string)
+        if Ekin < 0:
+            print('Ekin vysla zaporne! Ekin = '+str(Ekin))
+            break
+    print('------------------------------------------')
+    print('Delka drahy [cm], E_kin [MeV], S [MeV/cm]')
+    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
     E_zbyla = Ekin
     return E_zbyla
 
-def vypocet():
+def geometrie_alfa(s):
+    '''
+    Input:
+        s zadavat v cm
+    Output:
+        podil alfa castic ktere leti smerem na cip (delano pres prostorovy uhel)
+    '''
+    f=1/2*(1-s/np.sqrt(s**2+r_cip**2))
+    return f
+
+def vypocet_alfa():
+    '''
+    Output:
+        I_E_list(ndarray): integral vsech zbylych energii alf jdouci z koule o polomeru rovnu dosahu te dane
+                            alfa castice; beru, ze v kazdem elementu objemu vznika jedna alfa, tj. objemova 
+                            aktivita je 
+    '''
     I_E_list=[]
     for Ekin in E_alfa:
-        R = dosah_alfa_vzduch(Ekin)*10**(-3) #[m]
-        Ekin = Ekin*10**6*qe #[J]
-        fce = lambda s: zbyla_energie(s, Ekin=Ekin)
-        I_E = quad(fce, 0.01, R) #integral vsech energii
+        R = find_nearest_R(Ekin) #[cm]
+        fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin=Ekin)*geometrie_alfa(s)
+        I_E = quad(fce, 0.31, R) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E[0])
     return np.array(I_E_list)
 
-I_E=vypocet()/qe/1e6 
+#I_E=vypocet_alfa()
+#zbyla_energie(dosah_alfa[0],E_alfa[0])
+#zbyla_energie(dosah_alfa[1],E_alfa[1])
+#zbyla_energie(dosah_alfa[2],E_alfa[2])
