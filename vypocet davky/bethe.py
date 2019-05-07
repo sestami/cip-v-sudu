@@ -7,12 +7,14 @@ Created on Fri May  3 10:17:21 2019
 
 from math import sqrt, log, pi
 from scipy.constants import N_A, epsilon_0, e
-import numpy as np
+from scipy.interpolate import interp1d, CubicSpline
 from scipy.integrate import quad
+import numpy as np
 import pandas as pd
-from scipy.interpolate import interp1d
 from konstanty import *
 import time
+import matplotlib.pyplot as plt
+
 
 #Define some natural constants
 
@@ -52,36 +54,49 @@ data=pd.read_csv('ASTAR vzduch.txt', skiprows = 8, sep="\t")
 #databaze=pd.DataFrame([data.loc[:,'E[MeV]'], data.loc[:,'S_total[MeV cm2/g]'], data.loc[:,'CSDARange[g/cm2]']]).T
 
 x = np.asarray(data.loc[:,'E[MeV]'])
-S = np.asarray(data.loc[:,'S_total[MeV cm2/g]'])
-R = np.asarray(data.loc[:,'CSDARange[g/cm2]'])
+S = np.asarray(data.loc[:,'S_total[MeV cm2/g]'])*rho_vzduch
+R = np.asarray(data.loc[:,'CSDARange[g/cm2]'])/rho_vzduch
 
-def find_nearest(Ekin,y,x=x):
-    '''
-    Input:
-        Ekin(float): energie alfa castice, [MeV]
-    Output:
-        dEdx(float): celkova brzdna schopnost, [MeV/cm]
-    '''
-    idx = np.abs((Ekin - x)).argmin()
-    if Ekin<x[idx]:
-        x = x[idx-1:idx+1]
-        y = y[idx-1:idx+1]
-        value = interp1d(x, y, kind='linear')(Ekin)
-    elif Ekin>x[idx]:
-        x = x[idx:idx+2]
-        y = y[idx:idx+2]
-        value = interp1d(x, y, kind='linear')(Ekin)
-    elif Ekin==x[idx]:
-        value = y[idx]
-    return value
+S_spline = CubicSpline(x, S,extrapolate=True)
+R_spline = CubicSpline(x, R)
 
-def find_nearest_dEdx(Ekin, y=S):
-    return find_nearest(Ekin, y)*rho_vzduch
+xs = np.logspace(-3, 3, num=1000)
+#xs=[round(x,3) for x in xs]
+#pd.Series(xs).to_csv('file.txt',index=False)
 
-def find_nearest_R(Ekin, y=R):
-    return find_nearest(Ekin, y)/rho_vzduch
+Ss = S_spline(xs)
+Rs = R_spline(xs)
+plt.loglog(xs,Ss)
+plt.grid()
+plt.show()
 
-dosah_alfa=np.array([find_nearest_R(E) for E in E_alfa])
+#def find_nearest(Ekin,y,x=x):
+#    '''
+#    Input:
+#        Ekin(float): energie alfa castice, [MeV]
+#    Output:
+#        dEdx(float): celkova brzdna schopnost, [MeV/cm]
+#    '''
+#    idx = np.abs((Ekin - x)).argmin()
+#    if Ekin<x[idx]:
+#        x = x[idx-1:idx+1]
+#        y = y[idx-1:idx+1]
+#        value = interp1d(x, y, kind='linear')(Ekin)
+#    elif Ekin>x[idx]:
+#        x = x[idx:idx+2]
+#        y = y[idx:idx+2]
+#        value = interp1d(x, y, kind='linear')(Ekin)
+#    elif Ekin==x[idx]:
+#        value = y[idx]
+#    return value
+#
+#def find_nearest_dEdx(Ekin, y=S):
+#    return find_nearest(Ekin, y)*rho_vzduch
+#
+#def find_nearest_R(Ekin, y=R):
+#    return find_nearest(Ekin, y)/rho_vzduch
+
+dosah_alfa=np.array([R_spline(E) for E in E_alfa])
 
 
 #def usla_draha(Ekin, fce=find_nearest_dEdx, dx=1e-1):
@@ -108,7 +123,7 @@ dosah_alfa=np.array([find_nearest_R(E) for E in E_alfa])
 #
 #s=usla_draha(6)
 
-def zbyla_energie(s, Ekin, fce=find_nearest_dEdx, dx=1e-1):
+def zbyla_energie(s, Ekin, fce=S_spline, dx=1e-1):
     '''
     Input:
         s(float): draha alfa castice ve vzduchu nez dorazi k cipu [cm]
@@ -117,8 +132,8 @@ def zbyla_energie(s, Ekin, fce=find_nearest_dEdx, dx=1e-1):
     '''
     x=0         #position in cm
     dE=0     #energy loss in MeV
-    print('Ekin = '+str(Ekin)+'MeV')
-    print('delka drahy = '+str(s)+' cm')    
+#    print('Ekin = '+str(Ekin)+'MeV')
+#    print('delka drahy = '+str(s)+' cm')    
     while True:
         x = x+dx
         if x > s:
@@ -131,9 +146,9 @@ def zbyla_energie(s, Ekin, fce=find_nearest_dEdx, dx=1e-1):
         if Ekin < 0:
             print('Ekin vysla zaporne! Ekin = '+str(Ekin))
             break
-    print('------------------------------------------')
-    print('Delka drahy [cm], E_kin [MeV], S [MeV/cm]')
-    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
+#    print('------------------------------------------')
+#    print('Delka drahy [cm], E_kin [MeV], S [MeV/cm]')
+#    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
     E_zbyla = Ekin
     return E_zbyla
 
@@ -155,14 +170,14 @@ def vypocet_alfa():
                             aktivita je 
     '''
     I_E_list=[]
-    for Ekin in E_alfa:
-        R = find_nearest_R(Ekin) #[cm]
+    for i, Ekin in enumerate(E_alfa):
+        R = dosah_alfa[i] #[cm]
         fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin=Ekin)*geometrie_alfa(s)
         I_E = quad(fce, 0.31, R) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E[0])
     return np.array(I_E_list)
 
-#I_E=vypocet_alfa()
+I_E=vypocet_alfa()
 #zbyla_energie(dosah_alfa[0],E_alfa[0])
 #zbyla_energie(dosah_alfa[1],E_alfa[1])
 #zbyla_energie(dosah_alfa[2],E_alfa[2])

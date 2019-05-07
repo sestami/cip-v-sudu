@@ -84,7 +84,7 @@ F=0.1
 #------------------------------------------------------------------------------------------------
 #DAVKA OD ALF
 #sdelena energie cipu od alf z jedne premeny
- 
+
 
 E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
 
@@ -93,7 +93,7 @@ E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
 #Novy pristup
 def D_alfa(t):
     I_E=np.array([3.16382145, 4.1016981 , 8.35864858]) #ze skriptu bethe, z fce vypocet_alfa
-    E=sum(I_E)*(1-F)*a
+    E=sum(I_E[0]+I_E[1:]*F)*a
     
     E_celkove=(E+1/2*sum(E_alfa)*a*V_cip)*1.6*10**(-13)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
     return E_celkove/m_cip
@@ -122,7 +122,7 @@ def geometrie_gama(r,z,mu):
 
 #prvni slozka je energie gamy (v keV), druha slozka je hmotnostni soucinitel zeslabeni ve vzduchu (v cm^2/g), treti slozka je vytezek
 #zdroj soucinitelu zeslabeni = NIST XCOM, table 4
-gama_511=[511,8.712E-02,0.08] #od Rn
+gama_511=[511,8.712E-02,0.076] #od Rn
 gama_352=[352,9.800E-02,0.38]
 gama_300=[300,1.067E-01,0.27]
 gama_609=[609,8.055E-02,0.46]
@@ -295,7 +295,8 @@ def D_beta(t):
 #CELKOVE
 def soucet_prispevku(t):
     DAlfa=D_alfa(t)
-    DBeta=D_beta(t)
+#    DBeta=D_beta(t)
+    DBeta=0
     DGama=D_gama(t)
     print('DAlfa = '+str(DAlfa))
     print('DBeta = '+str(DBeta))

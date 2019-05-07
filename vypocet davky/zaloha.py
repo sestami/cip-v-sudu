@@ -161,3 +161,33 @@ w_N=3.43/100
 #    L=np.sqrt(r**2+z**2)
 #    f=np.pi*(1-L/np.sqrt(L**2+r_cip**2))*np.exp(-mu_beta*L)*r
 #    return f
+
+
+
+
+bethe.py
+#def find_nearest(Ekin,y,x=x):
+#    '''
+#    Input:
+#        Ekin(float): energie alfa castice, [MeV]
+#    Output:
+#        dEdx(float): celkova brzdna schopnost, [MeV/cm]
+#    '''
+#    idx = np.abs((Ekin - x)).argmin()
+#    if Ekin<x[idx]:
+#        x = x[idx-1:idx+1]
+#        y = y[idx-1:idx+1]
+#        value = interp1d(x, y, kind='linear')(Ekin)
+#    elif Ekin>x[idx]:
+#        x = x[idx:idx+2]
+#        y = y[idx:idx+2]
+#        value = interp1d(x, y, kind='linear')(Ekin)
+#    elif Ekin==x[idx]:
+#        value = y[idx]
+#    return value
+#
+#def find_nearest_dEdx(Ekin, y=S):
+#    return find_nearest(Ekin, y)*rho_vzduch
+#
+#def find_nearest_R(Ekin, y=R):
+#    return find_nearest(Ekin, y)/rho_vzduch
