@@ -36,7 +36,7 @@ Z1   = 2                    #nuclear charge of projectile (alfa)
 EB   = 85.7*qe              #85.7 eV in J, i.e., Mean Excitation Energy of Dry Air
 #ne   = 3.3456e29            #electron density of water in m^-3
 
-E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
+E_alfa=np.array([5.489, 6.002, 7.689]) #v MeV
 
 #def dosah_alfa_vzduch(E):
 #    '''
@@ -171,13 +171,15 @@ def vypocet_alfa():
     '''
     I_E_list=[]
     for i, Ekin in enumerate(E_alfa):
-        R = dosah_alfa[i] #[cm]
+        R_max = dosah_alfa[i] #[cm]
         fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin=Ekin)*geometrie_alfa(s)
-        I_E = quad(fce, 0.31, R) #integral vsech energii od povrchu pouzdra do dosahu
+        I_E = quad(fce, r_pouzdro, R_max+r_pouzdro) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E[0])
     return np.array(I_E_list)
 
 I_E=vypocet_alfa()
+V_slupka=4/3*np.pi*((dosah_alfa+r_pouzdro)**3-r_pouzdro**3)
+E_pouzdro=I_E/V_slupka
 #zbyla_energie(dosah_alfa[0],E_alfa[0])
 #zbyla_energie(dosah_alfa[1],E_alfa[1])
 #zbyla_energie(dosah_alfa[2],E_alfa[2])

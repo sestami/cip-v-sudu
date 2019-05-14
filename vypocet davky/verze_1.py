@@ -28,6 +28,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import quad, dblquad
 from konstanty import *
+import pandas as pd
 #from bethe import *
 #from scipy.constants import N_A
 
@@ -64,8 +65,9 @@ rho_pouzdro=sum(c_pouzdro_list*rho_pouzdro_list) #vychazi moc male, asi to nebud
 A_in=10**3
 
 #objemová aktivita v sudu
-a_metry=A_in/V_sud*10**6 #v Bq/m^3
-a=A_in/V_sud #v Bq/cm^3
+a_metry=(A_in/V_sud)*10**6 #v Bq/m^3
+a_metry=10**3
+a=a_metry/10**6 #v Bq/cm^3
 
 #doba trvani expozice
 T_tri_mesice=3*30*24*60*60 # tri mesice, v s
@@ -86,13 +88,13 @@ F=0.1
 #sdelena energie cipu od alf z jedne premeny
 
 
-E_alfa=np.array([5.490, 6.002, 7.689]) #v MeV
+E_alfa=np.array([5.489, 6.002, 7.689]) #v MeV
 
 #aktivita není konstantni; tento pripad je relevantni, ten spravny
 
 #Novy pristup
 def D_alfa(t):
-    I_E=np.array([3.16382145, 4.1016981 , 8.35864858]) #ze skriptu bethe, z fce vypocet_alfa
+    I_E=np.array([3.16634198, 4.10633207, 8.36559723]) #ze skriptu bethe, z fce vypocet_alfa
     E=sum(I_E[0]+I_E[1:]*F)*a
     
     E_celkove=(E+1/2*sum(E_alfa)*a*V_cip)*1.6*10**(-13)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
@@ -123,7 +125,8 @@ def geometrie_gama(r,z,mu):
 #prvni slozka je energie gamy (v keV), druha slozka je hmotnostni soucinitel zeslabeni ve vzduchu (v cm^2/g), treti slozka je vytezek
 #zdroj soucinitelu zeslabeni = NIST XCOM, table 4
 gama_511=[511,8.712E-02,0.076] #od Rn
-gama_352=[352,9.800E-02,0.38]
+#gama_242=[242, ,0.0743]
+gama_352=[352,9.800E-02,0.374]
 gama_300=[300,1.067E-01,0.27]
 gama_609=[609,8.055E-02,0.46]
 gama_1180=[1180,5.687E-02,0.21]
@@ -137,7 +140,8 @@ Y_list=np.array([gama_511[2],gama_352[2],gama_300[2],gama_609[2],gama_1180[2],ga
 absCoeff_list=np.array([2.971E-02,2.968E-02,2.932E-02,2.951E-02,2.7E-02,2.445E-02,2.3E-02]) #hmotnostni koeficienty absorpce v Si (kremik),
 #    zdroj: NIST XCOM, table 3
 #prevadeni na linearni soucinitel absorpce se provadi v gama_zpracovani
-
+export = pd.DataFrame(np.array([E_list, Y_list, mu_list, absCoeff_list]).T, columns=['E[keV]', 'Y', 'mu', 'muAbs'], index=['222Rn','214Pb','214Pb*','214Bi','214Bi*','214Bi','214Bi'])
+#export.to_latex('tab.tex')
 
 # PRISPEVEK OD VZDUCHU VYPLNUJICI SUD
 #integral pres objem sudu s koncentraci radonu a
@@ -298,11 +302,13 @@ def soucet_prispevku(t):
 #    DBeta=D_beta(t)
     DBeta=0
     DGama=D_gama(t)
+    
     print('DAlfa = '+str(DAlfa))
     print('DBeta = '+str(DBeta))
     print('DGama = '+str(DGama))
     DCelkova=sum([DAlfa,DBeta,DGama])
-    print('\nDCelkova = '+str(DCelkova*10**6)+' uGy')
+    print('\nOAR = '+str(a_metry/10**3)+' kBq/m^3')
+    print('DCelkova = '+str(DCelkova*10**6)+' uGy')
     return DCelkova
 #------------------------------------------------------------------------------------------------
 #------------------------------------------------------------------------------------------------
