@@ -120,7 +120,7 @@ Z takto určeného vývoje je možné stanovit dobu $T_1$, resp. $T_2$ (pro prvn
 		\caption{}
 		\label{fig:pokles}
 	\end{subfigure}
-\caption{V (a) je vidět časový vývoj koncentrace radonu v čipu v bezprostřední blízkosti pouzdra v prvním uvažovaném případě (injektáž radonu). V (b) je vidět vývoj $c_u$ pro druhý případ (vypumpování radonu ze sudu ven). V tomto případě $c_0=\SI{10}{kBq/m^3}$.}
+\caption{V (a) je vidět časový vývoj koncentrace radonu v čipu v bezprostřední blízkosti pouzdra v prvním uvažovaném případě (injektáž radonu). V (b) je vidět vývoj $c_u$ pro druhý případ (vypumpování radonu ze sudu ven). V obou případech uvažujeme $c_0=\SI{10}{kBq/m^3}$.}
 \label{fig:vyvoj_uvnitr}
 \end{figure}
 Časový vývoj $c_u$ je pro oba dva případy k nahlédnutí v obr.~\ref{fig:vyvoj_uvnitr}. $T_1$ a $T_2$ vychází pro všechna testovaná $c_0$ stejně:
@@ -140,25 +140,24 @@ Bylo ověřeno, že radon difunduje skrze pouzdro do čipu dostatečně rychle v
 	\bibitem{wiki} Wikipedia, The Free Encyclopedia: Crank–Nicolson method. Citováno 10. 5. 2019. Dostupné z \url{https://en.wikipedia.org/wiki/Crank%E2%80%93Nicolson_method}
 	\end{thebibliography}
 \section{Výpočet dávky absorbované v čipu}
-I této úloze aproximuje čip a pouzdro koulemi se středy ve stejném bodě a s poloměry $R_1$, resp. $R_2$:
+I v této úloze aproximuje čip a pouzdro koulemi se středy ve stejném bodě, zde však s poloměry $R_1$, resp. $R_2$:
 \begin{align}
 	R_1&=\SI{3,0}{mm}\,,\\
-	R_2&=\SI{3,1}{mm}\,.
+	R_2&=\SI{3,1}{mm}\,,
 \end{align}
-Objem a hmotnost čipu jsou označeny jako $V_{cip}$ a $m_{cip}$. Při výpočtu $m_{cip}$ bylo uvažováno, že celý čip je z křemíku:
+které odpovídající více reálným rozměrům čipu a pouzdra. Objem a hmotnost čipu jsou označeny jako $V_{cip}$ a $m_{cip}$:
 \begin{align}
 	V_{cip}&=\SI{0,0073}{cm^3}\,,\\
 	m_{cip}&=\SI{1.7e-05}{kg}\,.
 \end{align}
-
-Objem sudu:
+Při výpočtu $m_{cip}$ bylo uvažováno, že celý čip je z křemíku. Objem sudu je:
 \begin{align}
 	V_{sud}=\SI{0,19}{m^3}\,.
 \end{align}
 
-Je uvažován faktor nerovnováhy $F=0,1$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$. Průběh $a$ v sudu se pak řídí exponenciálním rozpadem.
+Uvažujeme faktor nerovnováhy $F=0,1$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$, průběh $a$ v sudu se pak řídí exponenciálním rozpadem.
 \subsection{Příspěvek od $\alpha$}
-V následujících dvou podkapitolách budou určeny energetické příspěvky od $\alpha$ částic vzniklých mimo a uvnitř čipu při dané aktivitě $a$ za jednotkový časový interval. V následující podkapitole proběhne časová integrace těchto příspěvků a následné podělení hmotností pro určení dávky od $\alpha$ částic.
+V následujících dvou podkapitolách budou určeny energetické příspěvky od $\alpha$ částic vzniklých mimo a uvnitř čipu, resp. pouzdra, při dané aktivitě $a_0$ za jednotkový časový interval (tj. \SI{1}{s}). V následující podkapitole proběhne časová integrace těchto příspěvků přes zadanou dobu expozice a následné podělení hmotností pro určení dávky od $\alpha$ částic.
 \subsubsection{Energetický příspěvek od $\alpha$, které vznikly mimo čip a pouzdro}
 Částice $\alpha$ o dané počáteční energii $T_0$ má v daném prostředí známý maximální dosah $R_{max}$~\cite{astar}. Proto lze okolo čipu uvažovat kouli o poloměru 
 $$R_3=R_{max}+R_2\,,$$
@@ -199,12 +198,12 @@ získáváme funkci $f(r)$, kterou lze zintegrovat od $R_2$ do $R_3$, tj.
 \begin{equation}
 	I=\int_{R_2}^{R_3}f(r)=\int_{R_2}^{R_3}k_1(r)\cdot k_2(r)\cdot f_0(r)\mathrm{dr}\,. 
 \end{equation}
-Tato veličina představuje střední hodnotu zbylé energie alfa částice s danou počáteční energií $T_0$ po dojití k pouzdru, která je přenásobená objemem kulové slupky s poloměry $R_2$ a $R_3$, tj. její rozměr je
+Tato veličina představuje střední hodnotu zbylé energie alfa částice s danou počáteční energií $T_0$ po dojití k pouzdru, která je přenásobená objemem kulové slupky s poloměry $R_2$ a $R_3$ a její rozměr je tedy 
 \begin{equation}
 	[I]=\si{MeV\cdot cm^3}\,.
 \end{equation}
 
-Po vydělení $I$ objemem  $V=\frac{4}{3}\pi(R_3^3-R_2^3)$ získáváme střední energii alfa částice u vstupu do pouzdra:
+Po vydělení $I$ integrovaným objemem  $V=\frac{4}{3}\pi(R_3^3-R_2^3)$ získáváme střední energii alfa částice u vstupu do pouzdra:
 \begin{equation}
 	\bar{E}=\frac{I}{V}\,.
 \end{equation}
@@ -215,7 +214,7 @@ Vypočítané hodnoty $I$, $\bar{E}$ a počáteční kinetické energie $T_0$ al
 	\label{tab:alfa_energie}
 	%3.1635352 , 4.10481408, 8.36293245
 	%0.00836222, 0.00737454, 0.00493332
-	\begin{tabular}{llll}
+	\begin{tabular}{lrrr}
 		\toprule
 		RN & $T_0$ [MeV] & $I$ [\si{MeV\cdot cm^3}] & $\bar{E}$ [MeV]\\
 		\midrule
@@ -229,8 +228,8 @@ Vypočítané hodnoty $I$, $\bar{E}$ a počáteční kinetické energie $T_0$ al
 \paragraph{Energetický příspěvek:}
 Energetický příspěvek od $\alpha$ částic vzniklých mimo objem pouzdra a čipu je možné vypočítat z
 \begin{align}
-E_{vne}&=(\bar{E}_{222} V_{222}+\bar{E}_{218} V_{218} F+\bar{E}_{214} V_{214} F) a\,,\\
-	&=(I_{222}+I_{218}F+I_{214}F)a\quad [\si{MeV}]\,,
+E_{vne}&=(\bar{E}_{222} V_{222}+\bar{E}_{218} V_{218} F+\bar{E}_{214} V_{214} F) a_0\,,\\
+	&=(I_{222}+I_{218}F+I_{214}F)a_0\quad [\si{MeV}]\,,
 \end{align}
 kde $F$ je faktor nerovnováhy.
 
@@ -239,7 +238,7 @@ kde $F$ je faktor nerovnováhy.
 \subsubsection{Energetický příspěvek od $\alpha$, které vznikly uvnitř čipu a pouzdra}
 Energetický příspěvek těchto $\alpha$ jsem odhadl jako jednu polovinu počátečních energií všech $\alpha$ částici vzniklých v objemu čipu, tj.:
 \begin{equation}
- E_{vnitrek}=\frac{1}{2}\cdot(5,489+6,002+7,689)\cdot a\cdot V_{cip}\quad[\si{MeV}]\,.
+ E_{vnitrek}=\frac{1}{2}\cdot(5,489+6,002+7,689)\cdot a_0\cdot V_{cip}\quad[\si{MeV}]\,.
 \end{equation} 
 Tento odhad lze odůvodnit tím, že $\alpha$ částice mají malý dosah, a proto pokud nejsou emitovány blízko povrchu čipu směrem ven, tak jsou absorbovány uvnitř čipu.
 \subsubsection{Celkový příspěvek k dávce}
@@ -249,24 +248,69 @@ Příspěvek od $\alpha$ k dávce je roven:
 \end{empheq}
 kde $1,6\times 10^{-13}$ je převodní faktor z MeV na Jouly, $\lambda$ je přeměnová konstanta radonu a $T$ je doba expozice.
 \subsection{Příspěvek od $\beta$}
-Toto je stále řešeno, vzhledem k charakteru $\beta$ záření je potřeba použít metody Monte Carlo.
+Tento příspěvek stále nebyl určen. Vzhledem k charakteru $\beta$ záření je potřeba použít metody Monte Carlo.
 \subsection{Příspěvek of $\gamma$}
-in progress
+U $\gamma$ záření postupujeme podobným způsobem jako u $\alpha$ s tím rozdílem, že se zde nepočítá s brzdnými schopnostmi, ale s exponenciálním zeslabováním svazku
+\begin{align}
+	N(d)=N_0e^{-\left(\frac{\mu}{\rho}\right)\cdot\rho\cdot d}\,,
+\end{align}
+kde $N_0$ je počet fotonů o dané energii $E$ před vstupem materiálu o hustotě $\rho$, $N(d)$ je počet nerozptýlených fotonů po projití materiálu o tloušťce $d$ a $\left(\frac{\mu}{\rho}\right)$ je hmotnostní součinitel zeslabení $\gamma$ záření v uvažovaném materiálu. 
+
+V dalším postupu předpokládáme, že pokud se kvantum $\gamma$ záření rozptýlí, pak již nemůže přispět k dávce absorbované v čipu, tj. uvažujeme úzký svazek. Tento předpoklad je ospravedlněn velikou pronikavostí $\gamma$ záření ve vzduchu.
+
+\begin{figure}[ht]
+	\centering
+	\includegraphics[width=0.4\linewidth]{valcove_souradnice.png}
+	\caption{Význam cylindrických souřadnic. \cite{valcovesouradnice}}
+	\label{fig:valcovesouradnice}
+\end{figure}
+Vzhledem k tomu, že sud je rozměrově válec, tak s výhodou využijeme cylindrických souřadnic $(r,\theta, z)$, jejichž význam je znázorněn v obr.~\ref{fig:valcovesouradnice}. 
+%V sudu lze očekávat homogenně rozloženou koncentraci radonu, a proto dále není potřeba uvažovat souřadnici
+Definujme následující funkci:
+\begin{align}
+	f(r,z)=\frac{1}{2}\cdot\left(1-\sqrt{\frac{r^2+z^2}{r^2+z^2+R_1^2}}\right)\cdot e^{-\mu\sqrt(r^2+z^2)}\,,\label{eq:gama_geometrie}
+\end{align}
+kde $\mu$ lineární součinitel zeslabení vzduchu. Tato funkce vyjadřuje, jaký zlomek fotonů vznikající v bodě o daných souřadnicích $r$ a $z$ a libovolné souřadnici $\theta\in[0,2\pi)$ dojde bez rozptýlení ke středu čipu (tím se dopouštíme určité nepřesnosti, jelikož správně bychom měli uvažovat pouze dráhu od místa vzniku k povrchu pouzdra a pak počítat zeslabování v pouzdru). Faktor 
+\begin{align}
+	\frac{1}{2}\cdot\left(1-\sqrt{\frac{r^2+z^2}{r^2+z^2+R_1^2}}\right)
+\end{align}
+zohledňuje korekci na prostorový úhel a exponenciela $e^{-\mu\sqrt(r^2+z^2)}$ představuje zeslabování svazku. Funkce $f(r,z)$ je nezávislá na souřadnici $\theta$, jelikož předpokládáme homogenní rozložení koncentrace radonu uvnitř sudu.
+
+Uvažujeme několik zdrojů $\gamma$ záření:
+\begin{enumerate}
+	\item \emph{vzduch v sudu}, ve kterém je radon o dané koncentrace $a$ a část vznikajících dceřinných produktů, jejichž koncentrace je dána vztahem $a\cdot F$.
+	\item \emph{Vnitřní povrch sudu}, na který se deponují dceřinné produkty. Jejich koncentrace na stěně: 
+	\begin{align}
+	a\cdot \frac{V_{sud}}{S_{sud}}\cdot (1-F)\,,\label{eq:povrch_sudu}
+	\end{align}
+	kde $S_{sud}$ je povrch vnitřního povrchu sudu.
+	\item \emph{Povrch pouzdra}, na který se též deponují dceřinné produkty, jejich koncentrace:
+	\begin{align}
+	\frac{S_{pouzdro}}{S_{pouzdro}+S_{sud}}\cdot a\cdot \frac{V_{sud}}{S_{pouzdro}}\cdot (1-F)\,,
+	\end{align}
+	kde $S_{pouzdro}$ je povrch pouzdra. Faktor tvaru $S_i/(S_i+S_j)$ by měl vystupovat i v \eqref{eq:povrch_sudu}, avšak tam může být zanedbán díky jeho blízkosti jedničce.
+\end{enumerate}
+\paragraph{Zanedbání:} Zanedbáváme $\gamma$ záření vznikající uvnitř čipu a pouzdra. Dále neuvažujeme zeslabení svazku uvnitř pouzdra s přihlédnutím k jeho tloušťce.
+\subsubsection{Vzduch v sudu}
+
+\subsubsection{Vnitřní povrch sudu}
+
+\subsubsection{Povrch pouzdra}
 \begin{table}[ht]
 	\centering
-	\caption{}
+	\caption{Energie $E$, výtěžek $Y$ a hmotnostní součinitel zeslabení $\frac{\mu}{\rho}$, resp. absorpce $\left(\frac{\mu}{\rho}\right)_{en}$ daného $\gamma$ záření od uvedeného radionuklidu (RN). Řádek s hvězdičkou u RN značí, že u daného radionuklidu bylo z důvodu zjednodušení sloučeno několik blízkých energetických linek dohromady a jejich výtěžky byly sečteny.}
 	\label{tab:gamy}
-	\begin{tabular}{lllll}
+	\begin{tabular}{lrrrr}
 		\toprule	 
-		{} &  E[keV] &      Y &       mu &    muAbs \\
+		RN &  $E$ [keV] &  $Y$ [\%] &       $\left(\frac{\mu}{\rho}\right)$ &    $\left(\frac{\mu}{\rho}\right)_{en}$ \\
 		\midrule
-		222Rn  &   511.0 &  0.076 &  0.08712 &  0.02971 \\
-		214Pb  &   352.0 &  0.374 &  0.09800 &  0.02968 \\
-		214Pb* &   300.0 &  0.270 &  0.10670 &  0.02932 \\
-		214Bi  &   609.0 &  0.460 &  0.08055 &  0.02951 \\
-		214Bi* &  1180.0 &  0.210 &  0.05687 &  0.02700 \\
-		214Bi  &  1764.0 &  0.150 &  0.04800 &  0.02445 \\
-		214Bi  &  2204.0 &  0.050 &  0.04447 &  0.02300 \\
+		222Rn  &   511.0 &  7.6 &  0.08712 &  0.02971 \\
+		214Pb  &   352.0 &  37.4 &  0.09800 &  0.02968 \\
+		214Pb* &   300.0 &  27.0 &  0.10670 &  0.02932 \\
+		214Bi  &   609.0 &  46.0 &  0.08055 &  0.02951 \\
+		214Bi* &  1180.0 &  21.0 &  0.05687 &  0.02700 \\
+		214Bi  &  1764.0 &  15.0 &  0.04800 &  0.02445 \\
+		214Bi  &  2204.0 &  5.0 &  0.04447 &  0.02300 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
@@ -278,5 +322,6 @@ Vypočítal jsem $D_{\alpha}$ pro $T=\SI{1}{den}$ a pro injektovanou koncentraci
 \begin{thebibliography}{Mm99}
 	\bibitem{astar} National Institute of Standards and Technology: aStar, Stopping-power and Range Tables for Helium Ions. 14. 5. 2019. Dostupné z \url{https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html}
 	\bibitem{srim} Ziegler, J. F.: SRIM - The Stopping and Range of Ions in Matter. 14. 5. 2019. Dostupné z \url{http://srim.org/} 
+	\bibitem{valcovesouradnice} Dawkins, P.: Section 1-12 : Cylindrical Coordinates. Citováno 17. 5. 2019. \url{http://tutorial.math.lamar.edu/Classes/CalcIII/CylindricalCoords.aspx}
 \end{thebibliography}
 \end{document}
