@@ -191,7 +191,7 @@ def I_pouzdro(mu):
     je to takove od oka...
     melo by to nadhodnocovat
     '''
-    return S_pouzdro/(S_pouzdro+S_sud)*(a*V_sud)*1/4
+    return S_pouzdro/(S_pouzdro+S_sud)*a*V_sud/S_pouzdro*1/4
 
 #prispevek od radonu
 I_Rn=I_vzduch(mu_list[0]*rho_vzduch)
