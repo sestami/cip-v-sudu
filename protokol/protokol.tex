@@ -150,7 +150,14 @@ které odpovídající více reálným rozměrům čipu a pouzdra. Objem a hmotn
 	V_{cip}&=\SI{0,0073}{cm^3}\,,\\
 	m_{cip}&=\SI{1.7e-05}{kg}\,.
 \end{align}
-Při výpočtu $m_{cip}$ bylo uvažováno, že celý čip je z křemíku. Objem sudu je:
+Při výpočtu $m_{cip}$ bylo uvažováno, že celý čip je z křemíku. 
+
+Sud je válec o poloměru a výšce
+\begin{align}
+R_{sud}&=\SI{27}{cm}\,,\\
+h_{sud}&=\SI{83}{cm}\,
+\end{align}
+a jeho objem je
 \begin{align}
 	V_{sud}=\SI{0,19}{m^3}\,.
 \end{align}
@@ -256,7 +263,7 @@ U $\gamma$ záření postupujeme podobným způsobem jako u $\alpha$ s tím rozd
 \end{align}
 kde $N_0$ je počet fotonů o dané energii $E$ před vstupem materiálu o hustotě $\rho$, $N(d)$ je počet nerozptýlených fotonů po projití materiálu o tloušťce $d$ a $\left(\frac{\mu}{\rho}\right)$ je hmotnostní součinitel zeslabení $\gamma$ záření v uvažovaném materiálu. 
 
-V dalším postupu předpokládáme, že pokud se kvantum $\gamma$ záření rozptýlí, pak již nemůže přispět k dávce absorbované v čipu, tj. uvažujeme úzký svazek. Tento předpoklad je ospravedlněn velikou pronikavostí $\gamma$ záření ve vzduchu.
+\paragraph{Důležité:} V dalším postupu předpokládáme, že pokud se kvantum $\gamma$ záření rozptýlí, pak již nemůže přispět k dávce absorbované v čipu, tj. uvažujeme úzký svazek. Tato aproximace je částečně ospravedlněna velikou pronikavostí $\gamma$ záření ve vzduchu.
 
 \begin{figure}[ht]
 	\centering
@@ -279,23 +286,54 @@ zohledňuje korekci na prostorový úhel a exponenciela $e^{-\mu\sqrt(r^2+z^2)}$
 Uvažujeme několik zdrojů $\gamma$ záření:
 \begin{enumerate}
 	\item \emph{vzduch v sudu}, ve kterém je radon o dané koncentrace $a$ a část vznikajících dceřinných produktů, jejichž koncentrace je dána vztahem $a\cdot F$.
-	\item \emph{Vnitřní povrch sudu}, na který se deponují dceřinné produkty. Jejich koncentrace na stěně: 
-	\begin{align}
-	a\cdot \frac{V_{sud}}{S_{sud}}\cdot (1-F)\,,\label{eq:povrch_sudu}
-	\end{align}
-	kde $S_{sud}$ je povrch vnitřního povrchu sudu.
-	\item \emph{Povrch pouzdra}, na který se též deponují dceřinné produkty, jejich koncentrace:
-	\begin{align}
-	\frac{S_{pouzdro}}{S_{pouzdro}+S_{sud}}\cdot a\cdot \frac{V_{sud}}{S_{pouzdro}}\cdot (1-F)\,,
-	\end{align}
-	kde $S_{pouzdro}$ je povrch pouzdra. Faktor tvaru $S_i/(S_i+S_j)$ by měl vystupovat i v \eqref{eq:povrch_sudu}, avšak tam může být zanedbán díky jeho blízkosti jedničce.
+	\item \emph{Vnitřní povrch sudu}, na který se deponují dceřinné produkty.
+	\item \emph{Povrch pouzdra}, na který se též deponují dceřinné produkty.
+	
 \end{enumerate}
 \paragraph{Zanedbání:} Zanedbáváme $\gamma$ záření vznikající uvnitř čipu a pouzdra. Dále neuvažujeme zeslabení svazku uvnitř pouzdra s přihlédnutím k jeho tloušťce.
 \subsubsection{Vzduch v sudu}
-
+Počet $\gamma$ kvant dané energie, které došly k čipu (při zanedbání pouzdra) v daný časový interval $[t,t+\mathrm{dt}]$, lze vypočítat z
+\begin{align}
+	N_{air}=a_{air}(t)\cdot Y\cdot 2\int_{R_1}^{R_{sud}}\int_{R_1}^{h_{sud}}f(r,z)\mathrm{dz}\mathrm{dr}\,,
+\end{align}
+kde $Y$ je výtěžek dané energetické linky a
+\begin{align}
+a_{air}=\begin{cases}
+a & \text{pro $\gamma$ od radonu}\,,\\
+a\cdot F & \text{pro $\gamma$ od dcer}\,.
+\end{cases}
+\end{align}
+Při tomto výpočtu zanedbáváme příspěvky od $\gamma$ záření vznikající v souřadnicích $r\in[0,R_1], z\in[0,R_1]$. Výpočtem bylo ověřeno, že toto zanedbání lze provést.
 \subsubsection{Vnitřní povrch sudu}
-
+Koncentrace dceřinných produktů na stěně je rovna
+\begin{align}
+a_{sud}=a\cdot \frac{V_{sud}}{S_{sud}}\cdot (1-F)\,,\label{eq:povrch_sudu}
+\end{align}
+kde $S_{sud}=\SI{1,866}{m^2}$ je povrch vnitřního povrchu sudu. Hledaný počet $\gamma$ částic došlých k čipu:
+\begin{equation}
+N_{sud}=a_{sud}(t) \cdot Y\cdot 2\left(\int_{0}^{R_{sud}}f(r,h_{sud})\mathrm{dr}+\int_{0}^{h_{sud}}f(R_{sud},z)\mathrm{dz}\right)\,.
+\end{equation}
 \subsubsection{Povrch pouzdra}
+Koncentrace dceřinných produktů na pouzdro je
+\begin{align}
+a_{pouzdro}=\frac{S_{pouzdro}}{S_{pouzdro}+S_{sud}}\cdot a\cdot \frac{V_{sud}}{S_{pouzdro}}\cdot (1-F)\,,
+\end{align}
+kde $S_{pouzdro}=\SI{8,81}{cm^2}$ je povrch pouzdra (vypočten ze skutečných rozměrů). Faktor $S_{sud}/(S_{sud}+S_{pouzdro})$ by správně měl být i v \eqref{eq:povrch_sudu}, ale tam může být zanedbán díky jeho blízkosti jedničce.
+
+ $N_{pouzdro}$ bylo odhadnuto následovně:
+\begin{align}
+N_{pouzdro}=\frac{1}{4}\cdot a_{pouzdro}\cdot Y\,.
+\end{align}
+Tento odhad se snaží nadhodnocovat příspěvek od dcer deponovaných na pouzdře.
+
+\subsubsection{Příspěvek k dávce}
+Nejprve je třeba určit počet částic absorbovaných čipu. To se zjistí pomocí hmotnostního součinitele absorpce $\left(\frac{\mu}{\rho}\right)_{en}$ ze vztahu
+\begin{align}
+N_{i}^{abs}=N_i\left(1-e^{-\left(\frac{\mu}{\rho}\right)_{en}\cdot \rho_{cip}\cdot 2R_1}\right)\,,
+\end{align}
+kde $i\in\{air, sud, pouzdro\}$.
+
+V tab.~\ref{tab:gamy} jsou uvedeny nejintenzivnější energetické linky radonu a jeho krátkodobě žijících dceřinných produktů. Některé linky s  blízkou energií byly pro zjednodušení sloučeny dohromady. 
 \begin{table}[ht]
 	\centering
 	\caption{Energie $E$, výtěžek $Y$ a hmotnostní součinitel zeslabení $\frac{\mu}{\rho}$, resp. absorpce $\left(\frac{\mu}{\rho}\right)_{en}$ daného $\gamma$ záření od uvedeného radionuklidu (RN). Řádek s hvězdičkou u RN značí, že u daného radionuklidu bylo z důvodu zjednodušení sloučeno několik blízkých energetických linek dohromady a jejich výtěžky byly sečteny.}
@@ -314,10 +352,26 @@ Uvažujeme několik zdrojů $\gamma$ záření:
 		\bottomrule
 	\end{tabular}
 \end{table}
-\subsection{Konkrétní hodnoty}
-Vypočítal jsem $D_{\alpha}$ pro $T=\SI{1}{den}$ a pro injektovanou koncentraci $a_0=\SI{1}{kBq\cdot m^{-3}}$:
+Dávka od linky s energií $E$ příslušející některému dceřinnému produktu je rovna:
 \begin{align}
-	D_{\alpha}=\SI{5.7}{\mu Gy}
+	D_{progenies}(E)=\frac{1}{m_{cip}}\sum_i N_{i}^{abs}\cdot E\cdot 1,6\cdot 10^{-16}\frac{1-\exp(-\lambda t)}{\lambda}\,,
+\end{align}
+dávka od linky \SI{511}{keV} od radonu je následující
+\begin{align}
+D_{Rn}(511)=\frac{1}{m_{cip}}N_{air}^{abs}\cdot 511\cdot 1,6\cdot 10^{-16}\frac{1-\exp(-\lambda t)}{\lambda}\,.
+\end{align}
+Faktor $1,6\cdot 10^{-16}$ slouží k převodu z \si{keV} na Jouly, $\lambda$ je přeměnová konstanta radonu.
+
+Celkový příspěvek od $\gamma$ záření k dávce je
+\begin{empheq}[box=\mymath]{equation}
+D_{\gamma}=D_{Rn}(511)+\sum_{E}D_{progenies}(E)
+\end{empheq}
+\subsection{Konkrétní hodnoty}
+Vypočítal jsem $D_{\alpha}$ a $D_{\gamma}$ pro $T=\SI{1}{den}$ a pro injektovanou koncentraci $a_0=\SI{1}{kBq\cdot m^{-3}}$:
+\begin{align}
+	D_{\alpha}&=\SI{5.70}{\mu Gy}\,,\\
+	D_{\gamma}&=\SI{0.21}{\mu Gy}\,,\\
+	D_{celk}&=\SI{5.91}{\mu Gy}\,.
 \end{align}
 \begin{thebibliography}{Mm99}
 	\bibitem{astar} National Institute of Standards and Technology: aStar, Stopping-power and Range Tables for Helium Ions. 14. 5. 2019. Dostupné z \url{https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html}

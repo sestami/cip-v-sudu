@@ -153,12 +153,13 @@ def I_vzduch(mu, f=geometrie_gama): # I jako integral
         integral poctu gam, ktere dosly k cipu (vzduchem)
     '''
     f_mu = lambda r, z: f(r,z,mu)
-    I_h=dblquad(f_mu, r_pouzdro, polomer_sudu, lambda x: r_pouzdro, lambda x: vyska_sudu/2)
+    I_h=dblquad(f_mu, r_cip, polomer_sudu, lambda x: r_cip, lambda x: vyska_sudu/2)
     return a*2*I_h[0]
 
 # PRISPEVEK OD STEN SUDU
 S_sud=2*np.pi*polomer_sudu*(vyska_sudu+polomer_sudu) #v cm^2
 S_pouzdro=2*((6.554+6.727+6.815)*(6.515+7.217+6.518)+(6.554+6.727+6.815)*(0.69+0.15)+(6.515+7.217+6.518)*(0.69+0.15))*10**(-2) #v cm^2
+pomer_ploch_pouzdro=S_pouzdro/4*np.pi*r_pouzdro
 
 #geometrie_gama_plast=lambda z,my: 0.5*(1-np.sqrt(polomer_sudu**2+z**2)/np.sqrt(polomer_sudu**2+z**2+r**2))*np.exp(-my*np.sqrt(polomer_sudu**2+z**2))
 def I_sud(mu, f=geometrie_gama):
@@ -226,6 +227,7 @@ def D_gama(t):
     '''
     E_vzduch=gama_zpracovani(I_vzduch,F)
     E_sud=gama_zpracovani(I_sud,1-F)
+#    E_pouzdro=pomer_ploch_pouzdro*gama_zpracovani(I_pouzdro,1-F)
     E_pouzdro=gama_zpracovani(I_pouzdro,1-F)
     
     E_celkove=(E_Rn+np.sum(E_vzduch+E_sud+E_pouzdro))*1.6*10**(-16)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu

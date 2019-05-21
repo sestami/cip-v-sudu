@@ -4,23 +4,25 @@
 \contentsline {section}{\numberline {3}Dif\IeC {\'u}ze radonu do \IeC {\v c}ipu skrze pouzdro}{2}{section.3}
 \contentsline {subsection}{\numberline {3.1}Popis dif\IeC {\'u}zn\IeC {\'\i }ho \IeC {\v s}\IeC {\'\i }\IeC {\v r}en\IeC {\'\i }}{2}{subsection.3.1}
 \contentsline {subsection}{\numberline {3.2}Sou\IeC {\v c}initel dif\IeC {\'u}ze a rozm\IeC {\v e}ry pouzdra}{2}{subsection.3.2}
-\contentsline {subsection}{\numberline {3.3}Numerick\IeC {\'e} \IeC {\v r}e\IeC {\v s}en\IeC {\'\i } dif\IeC {\'u}zn\IeC {\'\i } rovnice}{2}{subsection.3.3}
+\contentsline {subsection}{\numberline {3.3}Numerick\IeC {\'e} \IeC {\v r}e\IeC {\v s}en\IeC {\'\i } dif\IeC {\'u}zn\IeC {\'\i } rovnice}{3}{subsection.3.3}
 \contentsline {subsubsection}{\numberline {3.3.1}Po\IeC {\v c}\IeC {\'a}te\IeC {\v c}n\IeC {\'\i } a okrajov\IeC {\'e} podm\IeC {\'\i }nky}{3}{subsubsection.3.3.1}
 \contentsline {subsubsection}{\numberline {3.3.2}Pou\IeC {\v z}it\IeC {\'a} metoda}{4}{subsubsection.3.3.2}
 \contentsline {subsection}{\numberline {3.4}V\IeC {\'y}sledek}{4}{subsection.3.4}
-\contentsline {subsection}{\numberline {3.5}Diskuze}{4}{subsection.3.5}
-\contentsline {subsection}{\numberline {3.6}Z\IeC {\'a}v\IeC {\v e}r}{5}{subsection.3.6}
+\contentsline {subsection}{\numberline {3.5}Diskuze}{5}{subsection.3.5}
+\contentsline {subsection}{\numberline {3.6}Z\IeC {\'a}v\IeC {\v e}r}{6}{subsection.3.6}
 \contentsline {section}{\numberline {4}V\IeC {\'y}po\IeC {\v c}et d\IeC {\'a}vky absorbovan\IeC {\'e} v \IeC {\v c}ipu}{6}{section.4}
-\contentsline {subsection}{\numberline {4.1}P\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\alpha $}{6}{subsection.4.1}
-\contentsline {subsubsection}{\numberline {4.1.1}Energetick\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\alpha $, kter\IeC {\'e} vznikly mimo \IeC {\v c}ip a pouzdro}{6}{subsubsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1}P\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\alpha $}{7}{subsection.4.1}
+\contentsline {subsubsection}{\numberline {4.1.1}Energetick\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\alpha $, kter\IeC {\'e} vznikly mimo \IeC {\v c}ip a pouzdro}{7}{subsubsection.4.1.1}
 \contentsline {paragraph}{Energetick\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek:}{8}{section*.5}
 \contentsline {paragraph}{Nadhodnocen\IeC {\'\i }:}{8}{section*.6}
 \contentsline {subsubsection}{\numberline {4.1.2}Energetick\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\alpha $, kter\IeC {\'e} vznikly uvnit\IeC {\v r} \IeC {\v c}ipu a pouzdra}{8}{subsubsection.4.1.2}
-\contentsline {subsubsection}{\numberline {4.1.3}Celkov\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek k d\IeC {\'a}vce}{8}{subsubsection.4.1.3}
+\contentsline {subsubsection}{\numberline {4.1.3}Celkov\IeC {\'y} p\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek k d\IeC {\'a}vce}{9}{subsubsection.4.1.3}
 \contentsline {subsection}{\numberline {4.2}P\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek od $\beta $}{9}{subsection.4.2}
 \contentsline {subsection}{\numberline {4.3}P\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek of $\gamma $}{9}{subsection.4.3}
-\contentsline {paragraph}{Zanedb\IeC {\'a}n\IeC {\'\i }:}{10}{section*.9}
+\contentsline {paragraph}{D\IeC {\r u}le\IeC {\v z}it\IeC {\'e}:}{9}{section*.8}
+\contentsline {paragraph}{Zanedb\IeC {\'a}n\IeC {\'\i }:}{10}{section*.10}
 \contentsline {subsubsection}{\numberline {4.3.1}Vzduch v sudu}{10}{subsubsection.4.3.1}
-\contentsline {subsubsection}{\numberline {4.3.2}Vnit\IeC {\v r}n\IeC {\'\i } povrch sudu}{10}{subsubsection.4.3.2}
-\contentsline {subsubsection}{\numberline {4.3.3}Povrch pouzdra}{10}{subsubsection.4.3.3}
-\contentsline {subsection}{\numberline {4.4}Konkr\IeC {\'e}tn\IeC {\'\i } hodnoty}{11}{subsection.4.4}
+\contentsline {subsubsection}{\numberline {4.3.2}Vnit\IeC {\v r}n\IeC {\'\i } povrch sudu}{11}{subsubsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.3}Povrch pouzdra}{11}{subsubsection.4.3.3}
+\contentsline {subsubsection}{\numberline {4.3.4}P\IeC {\v r}\IeC {\'\i }sp\IeC {\v e}vek k d\IeC {\'a}vce}{11}{subsubsection.4.3.4}
+\contentsline {subsection}{\numberline {4.4}Konkr\IeC {\'e}tn\IeC {\'\i } hodnoty}{12}{subsection.4.4}
