@@ -37,6 +37,7 @@ Ještě předtím však bylo potřeba ověřit, že radon difunduje do zkoumané
 	\item Ověření, zdali radon difunduje k čipu přes vrstvičku materiálu pouzdra dostatečně rychle vzhledem k radioaktivní přeměně radonu v sudu.
 	\item Výpočet dávky absorbované v čipu. Určují se jednotlivě příspěvky od záření $\alpha, \beta, \gamma$.
 \end{enumerate}
+\clearpage
 \section{Difúze radonu do čipu skrze pouzdro}
 \subsection{Popis difúzního šíření}
 Průběh šíření radonu difúzí v čase v daném materiálu popsaném difúzním součinitelem $D$ se řídí druhým Fickovým zákonem
@@ -45,7 +46,7 @@ Průběh šíření radonu difúzí v čase v daném materiálu popsaném difúz
 \end{equation}
 kde $c=c(t;x,z,y)$ je koncentrace radonu v bodě $(x,y,z)$ v čase $t$, $\lambda$ je přeměnová konstanta radonu; $[c]=\si{Bq/m^3}$; $[D]=\si{m^2s^{-1}}$. 
 
-\subsection{Součinitel difúze a rozměry pouzdra}
+\subsection{Součinitel difúze a rozměry čipu a pouzdra}\label{rozmery}
 Vzhledem k tomu, že známe pouze prvkové složení pouzdra a nevíme, z jakého materiálu je vyrobeno, tak byl uvažován difúzní součinitel o hodnotě
 \begin{equation}
 D=\SI[parse-numbers = false]{3\cdot 10^{-7}}{m^2s^{-1}}\,,
@@ -139,13 +140,14 @@ Bylo ověřeno, že radon difunduje skrze pouzdro do čipu dostatečně rychle v
 	\bibitem{numerical_methods} Hellevik, L. R.: Numerical Methods for Engineers. Department of Structural Engineering, NTNU. 2018. Citováno 10. 5. 2019. Dostupné z \url{http://folk.ntnu.no/leifh/teaching/tkt4140/._main068.html#ch5:sec6} a \url{http://folk.ntnu.no/leifh/teaching/tkt4140/._main069.html#ex:52}
 	\bibitem{wiki} Wikipedia, The Free Encyclopedia: Crank–Nicolson method. Citováno 10. 5. 2019. Dostupné z \url{https://en.wikipedia.org/wiki/Crank%E2%80%93Nicolson_method}
 	\end{thebibliography}
+\clearpage
 \section{Výpočet dávky absorbované v čipu}
 I v této úloze aproximuje čip a pouzdro koulemi se středy ve stejném bodě, zde však s poloměry $R_1$, resp. $R_2$:
 \begin{align}
 	R_1&=\SI{3,0}{mm}\,,\\
 	R_2&=\SI{3,1}{mm}\,,
 \end{align}
-které odpovídající více reálným rozměrům čipu a pouzdra. Objem a hmotnost čipu jsou označeny jako $V_{cip}$ a $m_{cip}$:
+které odpovídající více reálným rozměrům čipu a pouzdra (lze dohledat v oddíle \ref{rozmery}). Objem a hmotnost čipu jsou označeny jako $V_{cip}$ a $m_{cip}$:
 \begin{align}
 	V_{cip}&=\SI{0,0073}{cm^3}\,,\\
 	m_{cip}&=\SI{1.7e-05}{kg}\,.
@@ -162,7 +164,7 @@ a jeho objem je
 	V_{sud}=\SI{0,19}{m^3}\,.
 \end{align}
 
-Uvažujeme faktor nerovnováhy $F=0,1$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$, průběh $a$ v sudu se pak řídí exponenciálním rozpadem.
+Uvažujeme několik hodnot faktoru nerovnováhy: $F=\num{0,01};\ \num{0,1};\ \num{0,4}$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$, průběh $a$ v sudu se pak řídí exponenciálním rozpadem.
 \subsection{Příspěvek od $\alpha$}
 V následujících dvou podkapitolách budou určeny energetické příspěvky od $\alpha$ částic vzniklých mimo a uvnitř čipu, resp. pouzdra, při dané aktivitě $a_0$ za jednotkový časový interval (tj. \SI{1}{s}). V následující podkapitole proběhne časová integrace těchto příspěvků přes zadanou dobu expozice a následné podělení hmotností pro určení dávky od $\alpha$ částic.
 \subsubsection{Energetický příspěvek od $\alpha$, které vznikly mimo čip a pouzdro}
@@ -281,7 +283,7 @@ kde $\mu$ lineární součinitel zeslabení vzduchu. Tato funkce vyjadřuje, jak
 \begin{align}
 	\frac{1}{2}\cdot\left(1-\sqrt{\frac{r^2+z^2}{r^2+z^2+R_1^2}}\right)
 \end{align}
-zohledňuje korekci na prostorový úhel a exponenciela $e^{-\mu\sqrt(r^2+z^2)}$ představuje zeslabování svazku. Funkce $f(r,z)$ je nezávislá na souřadnici $\theta$, jelikož předpokládáme homogenní rozložení koncentrace radonu uvnitř sudu.
+zohledňuje korekci na prostorový úhel a exponenciela $e^{-\mu\sqrt(r^2+z^2)}$ představuje zeslabení svazku. Funkce $f(r,z)$ je nezávislá na souřadnici $\theta$, jelikož předpokládáme homogenní rozložení koncentrace radonu uvnitř sudu.
 
 Uvažujeme několik zdrojů $\gamma$ záření:
 \begin{enumerate}
@@ -290,7 +292,7 @@ Uvažujeme několik zdrojů $\gamma$ záření:
 	\item \emph{Povrch pouzdra}, na který se též deponují dceřinné produkty.
 	
 \end{enumerate}
-\paragraph{Zanedbání:} Zanedbáváme $\gamma$ záření vznikající uvnitř čipu a pouzdra. Dále neuvažujeme zeslabení svazku uvnitř pouzdra s přihlédnutím k jeho tloušťce.
+\paragraph{Zanedbání:} Zanedbáváme $\gamma$ záření vznikající uvnitř čipu a pouzdra a dále neuvažujeme zeslabení svazku uvnitř pouzdra. Tímto odhad dávky od $\gamma$ nadhodnocujeme.
 \subsubsection{Vzduch v sudu}
 Počet $\gamma$ kvant dané energie, které došly k čipu (při zanedbání pouzdra) v daný časový interval $[t,t+\mathrm{dt}]$, lze vypočítat z
 \begin{align}
@@ -303,18 +305,18 @@ a & \text{pro $\gamma$ od radonu}\,,\\
 a\cdot F & \text{pro $\gamma$ od dcer}\,.
 \end{cases}
 \end{align}
-Při tomto výpočtu zanedbáváme příspěvky od $\gamma$ záření vznikající v souřadnicích $r\in[0,R_1], z\in[0,R_1]$. Výpočtem bylo ověřeno, že toto zanedbání lze provést.
+%Při tomto výpočtu zanedbáváme příspěvky od $\gamma$ záření vznikající v souřadnicích $r\in[0,R_1], z\in[0,R_1]$. Výpočtem bylo ověřeno, že toto zanedbání lze provést.
 \subsubsection{Vnitřní povrch sudu}
 Koncentrace dceřinných produktů na stěně je rovna
 \begin{align}
 a_{sud}=a\cdot \frac{V_{sud}}{S_{sud}}\cdot (1-F)\,,\label{eq:povrch_sudu}
 \end{align}
-kde $S_{sud}=\SI{1,866}{m^2}$ je povrch vnitřního povrchu sudu. Hledaný počet $\gamma$ částic došlých k čipu:
+kde $S_{sud}=\SI{1,866}{m^2}$ je povrch sudu. Hledaný počet $\gamma$ částic dané energetické linky došlých k čipu:
 \begin{equation}
 N_{sud}=a_{sud}(t) \cdot Y\cdot 2\left(\int_{0}^{R_{sud}}f(r,h_{sud})\mathrm{dr}+\int_{0}^{h_{sud}}f(R_{sud},z)\mathrm{dz}\right)\,.
 \end{equation}
 \subsubsection{Povrch pouzdra}
-Koncentrace dceřinných produktů na pouzdro je
+Koncentrace dceřinných produktů na pouzdru je
 \begin{align}
 a_{pouzdro}=\frac{S_{pouzdro}}{S_{pouzdro}+S_{sud}}\cdot a\cdot \frac{V_{sud}}{S_{pouzdro}}\cdot (1-F)\,,
 \end{align}
@@ -342,25 +344,26 @@ V tab.~\ref{tab:gamy} jsou uvedeny nejintenzivnější energetické linky radonu
 		\toprule	 
 		RN &  $E$ [keV] &  $Y$ [\%] &       $\left(\frac{\mu}{\rho}\right)$ &    $\left(\frac{\mu}{\rho}\right)_{en}$ \\
 		\midrule
-		222Rn  &   511.0 &  7.6 &  0.08712 &  0.02971 \\
-		214Pb  &   352.0 &  37.4 &  0.09800 &  0.02968 \\
-		214Pb* &   300.0 &  27.0 &  0.10670 &  0.02932 \\
-		214Bi  &   609.0 &  46.0 &  0.08055 &  0.02951 \\
-		214Bi* &  1180.0 &  21.0 &  0.05687 &  0.02700 \\
-		214Bi  &  1764.0 &  15.0 &  0.04800 &  0.02445 \\
-		214Bi  &  2204.0 &  5.0 &  0.04447 &  0.02300 \\
+		222Rn  &   511 &  7.6 &  0.08712 &  0.02971 \\
+		214Pb  &   352 &  37.4 &  0.09800 &  0.02968 \\
+		214Pb* &   300 &  27.0 &  0.10670 &  0.02932 \\
+		214Bi  &   609 &  46.0 &  0.08055 &  0.02951 \\
+		214Bi* &  1180 &  21.0 &  0.05687 &  0.02700 \\
+		214Bi  &  1764 &  15.0 &  0.04800 &  0.02445 \\
+		214Bi  &  2204 &  5.0 &  0.04447 &  0.02300 \\
 		\bottomrule
 	\end{tabular}
 \end{table}
+
 Dávka od linky s energií $E$ příslušející některému dceřinnému produktu je rovna:
 \begin{align}
-	D_{progenies}(E)=\frac{1}{m_{cip}}\sum_i N_{i}^{abs}\cdot E\cdot 1,6\cdot 10^{-16}\frac{1-\exp(-\lambda t)}{\lambda}\,,
+	D_{progenies}(E)=\frac{1}{m_{cip}}\sum_i N_{i}^{abs}\cdot E\cdot 1,6\times 10^{-16}\frac{1-\exp(-\lambda T)}{\lambda}\,,
 \end{align}
 dávka od linky \SI{511}{keV} od radonu je následující
 \begin{align}
-D_{Rn}(511)=\frac{1}{m_{cip}}N_{air}^{abs}\cdot 511\cdot 1,6\cdot 10^{-16}\frac{1-\exp(-\lambda t)}{\lambda}\,.
+D_{Rn}(511)=\frac{1}{m_{cip}}N_{air}^{abs}\cdot 511\cdot 1,6\times 10^{-16}\frac{1-\exp(-\lambda T)}{\lambda}\,.
 \end{align}
-Faktor $1,6\cdot 10^{-16}$ slouží k převodu z \si{keV} na Jouly, $\lambda$ je přeměnová konstanta radonu.
+Faktor $1,6\times 10^{-16}$ slouží k převodu z \si{keV} na Jouly, $\lambda$ je přeměnová konstanta radonu a $T$ je doba expozice v sekundách.
 
 Celkový příspěvek od $\gamma$ záření k dávce je
 \begin{empheq}[box=\mymath]{equation}
