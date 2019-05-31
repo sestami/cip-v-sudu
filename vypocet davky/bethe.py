@@ -20,7 +20,7 @@ import matplotlib.pyplot as plt
 
 mp = 1.672621637e-27        #kg
 me = 9.1093821499999992e-31 #kg
-ma = 6.64465620e-27         #kg, mass of the alfa particle
+ma = 6.64465620e-27         #kg,the mass of the alfa particle
 qe = e                      #C
 eps0 = epsilon_0            #F/m
 c = 299792458               #m/s
@@ -36,95 +36,59 @@ Z1   = 2                    #nuclear charge of projectile (alfa)
 EB   = 85.7*qe              #85.7 eV in J, i.e., Mean Excitation Energy of Dry Air
 #ne   = 3.3456e29            #electron density of water in m^-3
 
-E_alfa=np.array([5.489, 6.002, 7.689]) #v MeV
 
-#def dosah_alfa_vzduch(E):
-#    '''
-#    Input:
-#        E(float): kineticka energie [MeV]
-#    Output:
-#        R(float): dosah ve vzduchu [mm]
-#    '''
-#    R=3.18*E**(3/2)
-#    return R
-#
-#dosah=dosah_alfa_vzduch(E_alfa)*0.1
+#------------------------------------------------------------------------------------------------
+#ALFA
+E0_alfa=np.array([5.489, 6.002, 7.689]) #v MeV
+data_alfa=pd.read_csv('ASTAR vzduch.txt', skiprows = 8, sep="\t")
 
-data=pd.read_csv('ASTAR vzduch.txt', skiprows = 8, sep="\t")
-#databaze=pd.DataFrame([data.loc[:,'E[MeV]'], data.loc[:,'S_total[MeV cm2/g]'], data.loc[:,'CSDARange[g/cm2]']]).T
+E_alfa_data = np.asarray(data_alfa.loc[:,'E[MeV]'])
+S_alfa_data = np.asarray(data_alfa.loc[:,'S_total[MeV cm2/g]'])*rho_vzduch
+R_alfa_data = np.asarray(data_alfa.loc[:,'CSDARange[g/cm2]'])/rho_vzduch
 
-x = np.asarray(data.loc[:,'E[MeV]'])
-S = np.asarray(data.loc[:,'S_total[MeV cm2/g]'])*rho_vzduch
-R = np.asarray(data.loc[:,'CSDARange[g/cm2]'])/rho_vzduch
+S_alfa_spline = CubicSpline(E_alfa_data, S_alfa_data,extrapolate=True)
+R_alfa_spline = CubicSpline(E_alfa_data, R_alfa_data)
 
-S_spline = CubicSpline(x, S,extrapolate=True)
-R_spline = CubicSpline(x, R)
+def S_alfa(E):
+    if E>0:
+        return S_alfa_spline(E)
+    elif E<=0:
+        return 0
 
-xs = np.logspace(-3, 3, num=1000)
-#xs=[round(x,3) for x in xs]
-#pd.Series(xs).to_csv('file.txt',index=False)
+Es = np.logspace(-3, 3, num=1000)
+Es = np.linspace(0, 10**3, num=10000)
+Ss = S_alfa_spline(Es)
+Rs = R_alfa_spline(Es)
+#plt.plot(Es,Ss)
+#plt.grid()
+#plt.show()
+dosah_alfa=np.array([R_alfa_spline(E) for E in E0_alfa])
 
-Ss = S_spline(xs)
-Rs = R_spline(xs)
-plt.loglog(xs,Ss)
-plt.grid()
-plt.show()
+#------------------------------------------------------------------------------------------------
+#BETA
+E0_beta=np.array([0.219, 0.638]) #v MeV
+data_beta=pd.read_csv('ESTAR vzduch.txt', skiprows = 8, sep="\t")
+data_beta_dosah=pd.read_csv('ESTAR vzduch dosah.txt', skiprows = 8, sep="\t")
 
-#def find_nearest(Ekin,y,x=x):
-#    '''
-#    Input:
-#        Ekin(float): energie alfa castice, [MeV]
-#    Output:
-#        dEdx(float): celkova brzdna schopnost, [MeV/cm]
-#    '''
-#    idx = np.abs((Ekin - x)).argmin()
-#    if Ekin<x[idx]:
-#        x = x[idx-1:idx+1]
-#        y = y[idx-1:idx+1]
-#        value = interp1d(x, y, kind='linear')(Ekin)
-#    elif Ekin>x[idx]:
-#        x = x[idx:idx+2]
-#        y = y[idx:idx+2]
-#        value = interp1d(x, y, kind='linear')(Ekin)
-#    elif Ekin==x[idx]:
-#        value = y[idx]
-#    return value
-#
-#def find_nearest_dEdx(Ekin, y=S):
-#    return find_nearest(Ekin, y)*rho_vzduch
-#
-#def find_nearest_R(Ekin, y=R):
-#    return find_nearest(Ekin, y)/rho_vzduch
+E_beta_data = np.asarray(data_beta.loc[:,'E[MeV]'])
+S_beta_data = np.asarray(data_beta.loc[:,'S_total[MeV cm2/g]'])*rho_vzduch
+R_beta_data = np.asarray(data_beta_dosah.loc[:,'CSDARange[g/cm2]'])/rho_vzduch
 
-dosah_alfa=np.array([R_spline(E) for E in E_alfa])
+S_beta_spline = CubicSpline(E_beta_data, S_beta_data,extrapolate=True)
+R_beta_spline = CubicSpline(data_beta_dosah.loc[:,'E[MeV]'], R_beta_data)
 
+def S_beta(E):
+    if E>0:
+        return S_beta_spline(E)
+    elif E<=0:
+        return 0
 
-#def usla_draha(Ekin, fce=find_nearest_dEdx, dx=1e-1):
-#    '''
-#    Input:
-#        Ekin(float): pocatecni kineticka energie v MeV
-#    Output:
-#        x(float): delka projite drahy v cm
-#    '''
-#    x=0         #position in cm
-#    dE=0     #energy loss in MeV
-##    print('Ekin = '+str(round(Ekin, 3))+' MeV, s = '+str(s)+' cm;')
-#    head = 'Delka drahy [cm], E_kin [MeV], S [MeV/cm]'
-#    print(head)
-#    while Ekin > 0:
-#        
-#        dE = fce(Ekin)*dx     #units J/m*dx
-#        x = x+dx
-#        Ekin = Ekin - dE
-##        if dE < 0:
-##            break
-#        print(str(x) + ', ' + str(Ekin) + ', ' + str(dE/dx))
-#    return x
-#
-#s=usla_draha(6)
+dosah_beta=np.array([R_beta_spline(E) for E in E0_beta])
+#------------------------------------------------------------------------------------------------
 
-def zbyla_energie(s, Ekin, fce=S_spline, dx=1e-1):
+def zbyla_energie(s, Ekin, fce=S_alfa_spline, dx=1e-1):
     '''
+    PRO JAKOUKOLIV NABITOU CASTICI
     Input:
         s(float): draha alfa castice ve vzduchu nez dorazi k cipu [cm]
     Output:
@@ -137,6 +101,7 @@ def zbyla_energie(s, Ekin, fce=S_spline, dx=1e-1):
     while True:
         x = x+dx
         if x > s:
+#            print('castice prosla celou drahu!')
             break
         dE = fce(Ekin)*dx     #units MeV/cm*dx
         Ekin = Ekin - dE
@@ -152,34 +117,39 @@ def zbyla_energie(s, Ekin, fce=S_spline, dx=1e-1):
     E_zbyla = Ekin
     return E_zbyla
 
-def geometrie_alfa(s):
+def geometrie_nabiteCastice(s):
     '''
+    PRO JAKOUKOLIV NABITOU CASTICI
     Input:
-        s zadavat v cm
+        s: vzdalenost od cipu, v niz alfa castice vznikla [cm]
     Output:
         podil alfa castic ktere leti smerem na cip (delano pres prostorovy uhel)
     '''
     f=1/2*(1-s/np.sqrt(s**2+r_cip**2))
     return f
-
+#------------------------------------------------------------------------------------------------
 def vypocet_alfa():
     '''
     Output:
-        I_E_list(ndarray): integral vsech zbylych energii alf jdouci z koule o polomeru rovnu dosahu te dane
-                            alfa castice; beru, ze v kazdem elementu objemu vznika jedna alfa, tj. objemova 
-                            aktivita je 
+        I_E_list(ndarray): I_E je stredni energie, ktera zbyde alfa castici o dane
+                           energii po dojiti k cipu, prenasobena objemem koule,
+                           z niz emitovane alfa castice mohou k cipu dojit 
+                           (tj. o polomeru rovnem dosahu te dane alfa castice ve vzduchu)
     '''
     I_E_list=[]
-    for i, Ekin in enumerate(E_alfa):
+    for i, Ekin0 in enumerate(E0_alfa):
         R_max = dosah_alfa[i] #[cm]
-        fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin=Ekin)*geometrie_alfa(s)
+        fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin0, fce=S_alfa)*geometrie_nabiteCastice(s)
         I_E = quad(fce, r_pouzdro, R_max+r_pouzdro) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E[0])
     return np.array(I_E_list)
+#------------------------------------------------------------------------------------------------
+    
+#TO DO: vypocet_beta, ale pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!!
 
-I_E=vypocet_alfa()
-V_slupka=4/3*np.pi*((dosah_alfa+r_pouzdro)**3-r_pouzdro**3)
-E_pouzdro=I_E/V_slupka
+#I_E_alfa=vypocet_alfa()
+#V_slupka=4/3*np.pi*((dosah_alfa+r_pouzdro)**3-r_pouzdro**3)
+#E_pouzdro=I_E/V_slupka
 #zbyla_energie(dosah_alfa[0],E_alfa[0])
 #zbyla_energie(dosah_alfa[1],E_alfa[1])
 #zbyla_energie(dosah_alfa[2],E_alfa[2])

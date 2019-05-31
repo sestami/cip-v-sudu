@@ -94,7 +94,7 @@ E_alfa=np.array([5.489, 6.002, 7.689]) #v MeV
 
 #Novy pristup
 def D_alfa(t):
-    I_E=np.array([3.16634198, 4.10633207, 8.36559723]) #ze skriptu bethe, z fce vypocet_alfa
+    I_E=np.array([3.1635352 , 4.10481408, 8.36293245]) #ze skriptu bethe, z fce vypocet_alfa
     E=sum(I_E[0]+I_E[1:]*F)*a
     
     E_celkove=(E+1/2*sum(E_alfa)*a*V_cip)*1.6*10**(-13)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu

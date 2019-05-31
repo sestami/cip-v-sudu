@@ -191,3 +191,28 @@ bethe.py
 #
 #def find_nearest_R(Ekin, y=R):
 #    return find_nearest(Ekin, y)/rho_vzduch
+
+
+#def usla_draha(Ekin, fce=find_nearest_dEdx, dx=1e-1):
+#    '''
+#    Input:
+#        Ekin(float): pocatecni kineticka energie v MeV
+#    Output:
+#        x(float): delka projite drahy v cm
+#    '''
+#    x=0         #position in cm
+#    dE=0     #energy loss in MeV
+##    print('Ekin = '+str(round(Ekin, 3))+' MeV, s = '+str(s)+' cm;')
+#    head = 'Delka drahy [cm], E_kin [MeV], S [MeV/cm]'
+#    print(head)
+#    while Ekin > 0:
+#        
+#        dE = fce(Ekin)*dx     #units J/m*dx
+#        x = x+dx
+#        Ekin = Ekin - dE
+##        if dE < 0:
+##            break
+#        print(str(x) + ', ' + str(Ekin) + ', ' + str(dE/dx))
+#    return x
+#
+#s=usla_draha(6)
