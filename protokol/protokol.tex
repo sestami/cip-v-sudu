@@ -9,6 +9,7 @@
 \usepackage{a4wide}
 \usepackage{siunitx}
 \usepackage{booktabs}
+\usepackage{float}
 \usepackage{empheq}
 \usepackage[most]{tcolorbox}
 \newtcbox{\mymath}[1][]{%
@@ -195,7 +196,7 @@ $\frac{dE}{dx}(T_i)$ je brzdná schopnost alfa částice o energii $T_i$ ve vzdu
 pokud byla porušena jakákoliv kontrola v předchozím bodě, pak je cyklus ukončen a momentální $T$ je energie, která alfa částici zbyla při příchodu k pouzdru.
 \end{enumerate}
 
-Předchozí algoritmus je vlastně funkcí vzdálenosti vzniku alfa částice od pouzdra, tj. $r$, označme ji $f_0(r)$. Po přenásobením korekcí na prostorový úhel
+Předchozí algoritmus je vlastně funkcí vzdálenosti vzniku alfa částice od pouzdra, tj. $r$, označme tuto funkci $f_0(r)$. Po přenásobením korekcí na prostorový úhel
 \begin{equation*}
 k_1=\frac{1}{2}\cdot\left(1-\frac{r}{\sqrt{r^2+R_1^2}}\right)\,,
 \end{equation*}
@@ -257,7 +258,35 @@ Příspěvek od $\alpha$ k dávce je roven:
 \end{empheq}
 kde $1,6\times 10^{-13}$ je převodní faktor z MeV na Jouly, $\lambda$ je přeměnová konstanta radonu a $T$ je doba expozice.
 \subsection{Příspěvek od $\beta$}
-Tento příspěvek stále nebyl určen. Vzhledem k charakteru $\beta$ záření je potřeba použít metody Monte Carlo.
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[width=.99\textwidth]{betaSpektrum_Pb.png}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[width=.99\textwidth]{betaNahodnaCisla_Pb.png}
+		\caption{}
+	\end{subfigure}
+\caption{V (a) je originální beta spektrum \ce{^{214}Pb} přebrané z \cite{betaSpektrum}. V (b) je histogram $10^6$ realizací náhodné veličiny řídící se rozdělením, jehož hustota pravděpodobnosti je rovna beta spektru z (a).}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[width=.99\textwidth]{betaSpektrum_Bi.png}
+		\caption{}
+	\end{subfigure}
+	\begin{subfigure}{0.49\textwidth}
+		\centering
+		\includegraphics[width=.99\textwidth]{betaNahodnaCisla_Bi.png}
+		\caption{}
+	\end{subfigure}
+	\caption{V (a) je originální beta spektrum \ce{^{214}Bi} přebrané z \cite{betaSpektrum}. V (b) je histogram $10^6$ realizací náhodné veličiny řídící se beta spektrem z (a).}
+\end{figure}
+
 \subsection{Příspěvek of $\gamma$}
 U $\gamma$ záření postupujeme podobným způsobem jako u $\alpha$ s tím rozdílem, že se zde nepočítá s brzdnými schopnostmi, ale s exponenciálním zeslabováním svazku
 \begin{align}
@@ -379,6 +408,7 @@ Vypočítal jsem $D_{\alpha}$ a $D_{\gamma}$ pro $T=\SI{1}{den}$ a pro injektova
 \begin{thebibliography}{Mm99}
 	\bibitem{astar} National Institute of Standards and Technology: aStar, Stopping-power and Range Tables for Helium Ions. 14. 5. 2019. Dostupné z \url{https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html}
 	\bibitem{srim} Ziegler, J. F.: SRIM - The Stopping and Range of Ions in Matter. 14. 5. 2019. Dostupné z \url{http://srim.org/} 
-	\bibitem{valcovesouradnice} Dawkins, P.: Section 1-12 : Cylindrical Coordinates. Citováno 17. 5. 2019. \url{http://tutorial.math.lamar.edu/Classes/CalcIII/CylindricalCoords.aspx}
+	\bibitem{valcovesouradnice} Dawkins, P.: Section 1-12 : Cylindrical Coordinates. Citováno 17. 5. 2019. Dostupné z \url{http://tutorial.math.lamar.edu/Classes/CalcIII/CylindricalCoords.aspx}
+	\bibitem{betaSpektrum} Modeste Tchakoua Tchouaso: Odpověď na dotaz "How can I determine the energy spectrum of beta decay?" na webu ResearchGate. Citováno 4. 6. 2019. Dostupné z  \url{https://www.researchgate.net/post/How_can_I_determine_the_energy_spectrum_of_beta_decay}
 \end{thebibliography}
 \end{document}
