@@ -101,7 +101,7 @@ def zbyla_energie(s, Ekin, fce=S_alfa_spline, dx=1e-1):
     while True:
         x = x+dx
         if x > s:
-#            print('castice prosla celou drahu!')
+            print('castice prosla celou drahu!')
             break
         dE = fce(Ekin)*dx     #units MeV/cm*dx
         Ekin = Ekin - dE
@@ -128,7 +128,7 @@ def geometrie_nabiteCastice(s):
     f=1/2*(1-s/np.sqrt(s**2+r_cip**2))
     return f
 #------------------------------------------------------------------------------------------------
-def vypocet_alfa():
+def vypocet(E0=E0_alfa, dosah=dosah_alfa):
     '''
     Output:
         I_E_list(ndarray): I_E je stredni energie, ktera zbyde alfa castici o dane
@@ -137,15 +137,19 @@ def vypocet_alfa():
                            (tj. o polomeru rovnem dosahu te dane alfa castice ve vzduchu)
     '''
     I_E_list=[]
-    for i, Ekin0 in enumerate(E0_alfa):
-        R_max = dosah_alfa[i] #[cm]
+    for i, Ekin0 in enumerate(E0):
+        R_max = dosah[i] #[cm]
         fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin0, fce=S_alfa)*geometrie_nabiteCastice(s)
         I_E = quad(fce, r_pouzdro, R_max+r_pouzdro) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E[0])
     return np.array(I_E_list)
 #------------------------------------------------------------------------------------------------
-    
-#TO DO: vypocet_beta, ale pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!!
+
+I_E_beta=vypocet(E0=E0_beta, dosah=dosah_beta)
+I_E_alfa=vypocet()
+
+#TO DO: pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!!
+#       I_E_beta vychazi zaporne!!! WTF
 
 #I_E_alfa=vypocet_alfa()
 #V_slupka=4/3*np.pi*((dosah_alfa+r_pouzdro)**3-r_pouzdro**3)
