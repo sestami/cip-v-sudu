@@ -86,14 +86,17 @@ def S_beta(E):
 dosah_beta=np.array([R_beta_spline(E) for E in E0_beta])
 #------------------------------------------------------------------------------------------------
 
-def zbyla_energie(s, Ekin, fce=S_alfa_spline, dx=1e-1):
+def zbyla_energie(s, Ekin, fce, dx=1e-1):
     '''
     PRO JAKOUKOLIV NABITOU CASTICI
     Input:
         s(float): draha alfa castice ve vzduchu nez dorazi k cipu [cm]
+        Ekin(float): energie dane castice [MeV]
     Output:
-        E_zbyla(float): zbyla energie alfa castice po jejim pruchodu vzduchu po draze dlouhe s
+        E_zbyla(float): zbyla energie alfa castice po jejim pruchodu vzduchu po draze dlouhe s [MeV]
     '''
+    f=open('bethe_output.txt','w+')
+    f.write('x[cm]  Ekin[MeV]  S[MeV/cm]\n')
     x=0         #position in cm
     dE=0     #energy loss in MeV
 #    print('Ekin = '+str(Ekin)+'MeV')
@@ -105,15 +108,18 @@ def zbyla_energie(s, Ekin, fce=S_alfa_spline, dx=1e-1):
             break
         dE = fce(Ekin)*dx     #units MeV/cm*dx
         Ekin = Ekin - dE
+        if Ekin < 0:
+            print('Ekin vysla zaporne! Ekin = '+str(Ekin)+' Nastavuji Ekin = 0')
+            Ekin=0
+            break
         if dE < 0:
             print('dE vyslo zaporne! dE = '+str(dE))
             break
-        if Ekin < 0:
-            print('Ekin vysla zaporne! Ekin = '+str(Ekin))
-            break
+        f.write(str(x)+'  '+str(Ekin)+'  '+str(dE/dx)+'\n')
 #    print('------------------------------------------')
 #    print('Delka drahy [cm], E_kin [MeV], S [MeV/cm]')
 #    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
+    f.close()
     E_zbyla = Ekin
     return E_zbyla
 
@@ -128,7 +134,7 @@ def geometrie_nabiteCastice(s):
     f=1/2*(1-s/np.sqrt(s**2+r_cip**2))
     return f
 #------------------------------------------------------------------------------------------------
-def vypocet(E0=E0_alfa, dosah=dosah_alfa):
+def vypocet(E0=E0_alfa, dosah=dosah_alfa, dx=1e-1):
     '''
     Output:
         I_E_list(ndarray): I_E je stredni energie, ktera zbyde alfa castici o dane
@@ -139,17 +145,22 @@ def vypocet(E0=E0_alfa, dosah=dosah_alfa):
     I_E_list=[]
     for i, Ekin0 in enumerate(E0):
         R_max = dosah[i] #[cm]
-        fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin0, fce=S_alfa)*geometrie_nabiteCastice(s)
+        fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin0, S_beta, dx=dx)*geometrie_nabiteCastice(s)
         I_E = quad(fce, r_pouzdro, R_max+r_pouzdro) #integral vsech energii od povrchu pouzdra do dosahu
-        I_E_list.append(I_E[0])
+        I_E_list.append(I_E)
     return np.array(I_E_list)
 #------------------------------------------------------------------------------------------------
 
 I_E_beta=vypocet(E0=E0_beta, dosah=dosah_beta)
-I_E_alfa=vypocet()
+#I_E_alfa=vypocet()
+I_E_beta_zaznam=np.arrayarray([[1.84509027e+00, 1.26657675e-04], [2.43105853e+01, 2.52813130e-03]])
+
+E_zbyla=zbyla_energie(dosah_beta[1], E0_beta[1], fce=S_beta)
 
 #TO DO: pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!!
-#       I_E_beta vychazi zaporne!!! WTF
+#       vypocet I_E_beta trva hrozne dlouho
+#       POZOR!! zdali se pouziva S_alfa nebo S_beta se rozhoduje uvnitr fce vypocet, na radku 148!!! (jinak mi to
+#            hazi chybu "Kernel died, restarting")
 
 #I_E_alfa=vypocet_alfa()
 #V_slupka=4/3*np.pi*((dosah_alfa+r_pouzdro)**3-r_pouzdro**3)
