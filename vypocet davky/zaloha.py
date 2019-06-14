@@ -216,3 +216,66 @@ bethe.py
 #    return x
 #
 #s=usla_draha(6)
+
+#------------------------------------------------------------------------------------------------
+#------------------------------------------------------------------------------------------------
+#DAVKA OD BETY
+'''Jak na to:
+    - nejprve vypocitat dosahy z empirickych vzorcu -> NOPE, dosahy urciny z tabulek NIST XCOM; radove odpovidaji dosahum
+                                                       urcenym z techto empirickych vzorcu (ktere plati pro hlinik)
+    - budu to delat pres soucinitele absorpce
+    - budu uvazovat, ze beta zareni dosle do cipu ma energii rovnou jedne ctvrtine jeho E_max (to by melo davku znacne
+      nadhodnocovat)
+ 
+'''
+
+#vstupni udaje
+E_endpoints=np.array([672,729,1520,3272]) #v keV
+E_middle=1/2*E_endpoints #overit
+Y_list_beta=np.array([49,42,35,18.2])/100 #resit toto je nesmysl !!!
+
+def soucinitel_absorpce(E_max, rho):
+    return 22*E_max**(-4/3)/rho
+
+#hmotnostni soucinitele absorpce
+mu_list_beta=np.array([soucinitel_absorpce(E_max,rho_vzduch) for E_max in E_endpoints])
+
+
+def beta_zpracovani(I_fce, F):
+    '''
+    Output:
+        energie deponovana od beta zareni dcer v cipu v keV
+    Predpoklady:
+        dva zpusoby:
+            1) od kazde castice se deponuje energie rovna jedne desetine maximalni energie daneho beta zareni
+            2) jako u gamy, energie deponovana od jedne absorbovane castice se bere jedna desetina max. 
+               energie dane bety
+    '''
+    I_dcery_po_vzduchu=np.array([I_fce(mu*rho_vzduch) for mu in mu_list_beta]) #aktivita dosla na povrch pouzdra
+    I_dcery=np.array([I_0*np.exp(-mu_list_beta[i]*rho_pouzdro) for i,I_0 in enumerate(I_dcery_po_vzduchu)]) #aktivita v cipu pro jednotkovou objemovou aktivitu
+    A_dcery=np.array([F*Y*I_dcery[i] for i,Y in enumerate(Y_list_beta)]) #a musi byt v Bq/cm^3 !!!; zahrnuje vytezek, integral pres objem sudu
+    #1) to, co se dostalo do cipu, se plne deponuje
+    A_deponovane=A_dcery 
+    #2) viz v popisu funkce
+#    A_deponovane=np.array([A_dcery[i]*(1-np.exp(-absCoeff*rho_cip*2*r_cip)) for i,absCoeff in enumerate(mu_list_beta)])
+    return A_deponovane*1/10*E_endpoints
+
+def D_beta(t):
+    '''
+    TO DO:
+        
+    DONE:
+        
+    Predpoklady:
+        viz fce beta_zpracovani
+    Input:
+        doba trvani pro urceni casoveho integralu davky
+    Output:
+        davka od gam pri promenne aktivite, v J/kg
+    '''
+    E_vzduch=beta_zpracovani(I_vzduch,F)
+    E_sud=beta_zpracovani(I_sud,1-F)
+    E_pouzdro=beta_zpracovani(I_pouzdro,1-F)
+    
+    E_celkove=np.sum(E_vzduch+E_sud+E_pouzdro)*1.6*10**(-16)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
+    return E_celkove/m_cip

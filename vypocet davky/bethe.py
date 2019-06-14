@@ -95,16 +95,26 @@ def zbyla_energie(s, Ekin, fce, dx=1e-1):
     Output:
         E_zbyla(float): zbyla energie alfa castice po jejim pruchodu vzduchu po draze dlouhe s [MeV]
     '''
-    f=open('bethe_output.txt','w+')
-    f.write('x[cm]  Ekin[MeV]  S[MeV/cm]\n')
+    print()
+#    f=open('bethe_output.txt','w+')
+#    f.write('x[cm]  Ekin[MeV]  S[MeV/cm]\n')
     x=0         #position in cm
     dE=0     #energy loss in MeV
 #    print('Ekin = '+str(Ekin)+'MeV')
-#    print('delka drahy = '+str(s)+' cm')    
+#    print('delka drahy = '+str(s)+' cm')
+    faktor_pruniku=1
+    if s**2>=polomer_sudu**2+(vyska_sudu/2)**2: #uvazovana kulova slupka je uplne mimo sud
+        print("Rozmer vetsi nez rozmery sudu, zadny prispevek.")
+        return 0   
+    if s>polomer_sudu and s<vyska_sudu/2: #uvazovana kulova slupka je castecne mimo sud
+        faktor_pruniku=1-(1-polomer_sudu**2/s**2)**(3/2)
+        print("polomer slupky je vetsi nez polomer sudu, faktor pruniku = "+str(faktor_pruniku))
+#    elif s>polomer_sudu and s>vyska_sudu/2:
+        #DORESIT!!!!
     while True:
         x = x+dx
         if x > s:
-            print('castice prosla celou drahu!')
+            print('Castice prosla celou drahu!')
             break
         dE = fce(Ekin)*dx     #units MeV/cm*dx
         Ekin = Ekin - dE
@@ -115,13 +125,13 @@ def zbyla_energie(s, Ekin, fce, dx=1e-1):
         if dE < 0:
             print('dE vyslo zaporne! dE = '+str(dE))
             break
-        f.write(str(x)+'  '+str(Ekin)+'  '+str(dE/dx)+'\n')
+#        f.write(str(x)+'  '+str(Ekin)+'  '+str(dE/dx)+'\n')
 #    print('------------------------------------------')
 #    print('Delka drahy [cm], E_kin [MeV], S [MeV/cm]')
 #    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
-    f.close()
+#    f.close()
     E_zbyla = Ekin
-    return E_zbyla
+    return faktor_pruniku*E_zbyla
 
 def geometrie_nabiteCastice(s):
     '''
@@ -153,11 +163,10 @@ def vypocet(E0=E0_alfa, dosah=dosah_alfa, dx=1e-1):
 
 I_E_beta=vypocet(E0=E0_beta, dosah=dosah_beta)
 #I_E_alfa=vypocet()
-I_E_beta_zaznam=np.arrayarray([[1.84509027e+00, 1.26657675e-04], [2.43105853e+01, 2.52813130e-03]])
-
+I_E_beta_zaznam=np.array([[1.75963424e+00, 8.93746399e-04], [7.59730396e+00, 5.26641172e-02]])
 E_zbyla=zbyla_energie(dosah_beta[1], E0_beta[1], fce=S_beta)
 
-#TO DO: pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!!
+#TO DO: pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!! (zbyva udelat pripad r_sf>h/2, viz radek 113)
 #       vypocet I_E_beta trva hrozne dlouho
 #       POZOR!! zdali se pouziva S_alfa nebo S_beta se rozhoduje uvnitr fce vypocet, na radku 148!!! (jinak mi to
 #            hazi chybu "Kernel died, restarting")
