@@ -165,10 +165,10 @@ a jeho objem je
 	V_{sud}=\SI{0,19}{m^3}\,.
 \end{align}
 
-Uvažujeme několik hodnot faktoru nerovnováhy: $F=\num{0,01};\ \num{0,1};\ \num{0,4}$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$, průběh $a$ v sudu se pak řídí exponenciálním rozpadem.
+Uvažujeme několik hodnot faktoru nerovnováhy: $F=\num{0,01};\ \num{0,1};\ \num{0,4}$. Objemová aktivita radonu je označena $a$. Do sudu je na začátku experimentu jednorázově injektována počáteční koncentrace radonu $a_0$, průběh $a$ v sudu se pak řídí zákonem exponenciální přeměny.
 \subsection{Příspěvek od $\alpha$}
 V následujících dvou podkapitolách budou určeny energetické příspěvky od $\alpha$ částic vzniklých mimo a uvnitř čipu, resp. pouzdra, při dané aktivitě $a_0$ za jednotkový časový interval (tj. \SI{1}{s}). V následující podkapitole proběhne časová integrace těchto příspěvků přes zadanou dobu expozice a následné podělení hmotností pro určení dávky od $\alpha$ částic.
-\subsubsection{Energetický příspěvek od $\alpha$, které vznikly mimo čip a pouzdro}
+\subsubsection{Energetický příspěvek od $\alpha$, které vznikly mimo čip a pouzdro}\label{navesti:algoritmus_nabiteCastice}
 Částice $\alpha$ o dané počáteční energii $T_0$ má v daném prostředí známý maximální dosah $R_{max}$~\cite{astar}. Proto lze okolo čipu uvažovat kouli o poloměru 
 $$R_3=R_{max}+R_2\,,$$
 v jejímž objemu vzniklé alfa částice mohou dolétnout k pouzdru. Alfa částice emitované mimo tuto kouli budou zastaveny dříve než doletí k pouzdru čipu. Ztrátu energie částice alfa, která vznikla ve vzdálenosti $r\in[R_2, R_3]$ od pouzdra, po projití vrstvy vzduchu o tloušťce $r$ je možné zjistit z tabelovaných hodnot brzdných schopností \cite{astar} a pomocí následujícího jednoduchého algoritmu:
@@ -239,7 +239,7 @@ Vypočítané hodnoty $I$, $\bar{E}$ a počáteční kinetické energie $T_0$ al
 Energetický příspěvek od $\alpha$ částic vzniklých mimo objem pouzdra a čipu je možné vypočítat z
 \begin{align}
 E_{vne}&=(\bar{E}_{222} V_{222}+\bar{E}_{218} V_{218} F+\bar{E}_{214} V_{214} F) a_0\,,\\
-	&=(I_{222}+I_{218}F+I_{214}F)a_0\quad [\si{MeV}]\,,
+	&=(I_{222}+I_{218}F+I_{214}F)a_0\quad [\si{MeV}]\,,\label{eq:energetickyPrispevek_integral}
 \end{align}
 kde $F$ je faktor nerovnováhy.
 
@@ -254,10 +254,15 @@ Tento odhad lze odůvodnit tím, že $\alpha$ částice mají malý dosah, a pro
 \subsubsection{Celkový příspěvek k dávce}
 Příspěvek od $\alpha$ k dávce je roven:
 \begin{empheq}[box=\mymath]{equation}
-	D_{\alpha}=\frac{1}{m_{cip}}(E_{vne}+E_{uvnitr})\cdot 1,6\times 10^{-13}\frac{1-\exp(-\lambda T)}{\lambda}\,,
+	D_{\alpha}=\frac{1}{m_{cip}}(E_{vne}+E_{uvnitr})\cdot 1,6\times 10^{-13}\frac{1-\exp(-\lambda T)}{\lambda}\,,\label{eq:prispevek_alfa}
 \end{empheq}
 kde $1,6\times 10^{-13}$ je převodní faktor z MeV na Jouly, $\lambda$ je přeměnová konstanta radonu a $T$ je doba expozice.
 \subsection{Příspěvek od $\beta$}
+Určit alespoň přibližně energetický příspěvek od $\beta$ záření je velmi problematické, protože elektrony při interakcích s látkou velmi snadno mění svůj směr letu. Pokud bychom chtěli přesný výsledek, pak nutně musíme použít metodu Monte Carlo. Pro určení horního maximálního odhadu nám ale postačí drobně modifikovaný algoritmus již uvedený v podkapitolce~\ref{navesti:algoritmus_nabiteCastice}. Ještě předtím je však nutno určit energie, na které tento algoritmus použijeme.
+\subsubsection{Střední energie $\beta$ spekter}
+Dalším problémem je, že energetické spektrum $\beta$ záření je spojité. Situaci si můžeme ulehčit, pokud budeme počítat pouze se středními hodnotami energie daného $\beta$ záření. Tu lze při známosti daného spektra určit pomocí jednoduché Monte Carlo simulace, kdy energetické spektrum bereme jako nenormovanou pravděpodobnostní hustotu a z ní generujeme náhodná čísla, ze kterých následně uděláme průměr představující hledanou střední energii. Platí, že čím více vygenerujeme náhodných čísel, tím je výsledek přesnější.
+
+Na obr.~\ref{fig:betaSpektrum_214Pb} a \ref{fig:betaSpektrum_214Bi} jsou pravá a vygenerovaná spektra \ce{^{214}Pb} a \ce{^{214}Bi}. V tab~\ref{tab:stredniEnergie} jsou určené střední energie těchto spekter. Náhodná čísla byla generována metodou přijetí-zamítnutí \cite{rejection}, u které nebylo třeba normovat spektra.
 \begin{figure}[H]
 	\centering
 	\begin{subfigure}{0.49\textwidth}
@@ -270,7 +275,8 @@ kde $1,6\times 10^{-13}$ je převodní faktor z MeV na Jouly, $\lambda$ je přem
 		\includegraphics[width=.99\textwidth]{betaNahodnaCisla_Pb.png}
 		\caption{}
 	\end{subfigure}
-\caption{V (a) je originální beta spektrum \ce{^{214}Pb} přebrané z \cite{betaSpektrum}. V (b) je histogram $10^6$ realizací náhodné veličiny řídící se rozdělením, jehož hustota pravděpodobnosti je rovna beta spektru z (a).}
+\caption{V (a) je originální beta spektrum \ce{^{214}Pb} přebrané z \cite{betaSpektrum}. V (b) je histogram $10^6$ realizací náhodné veličiny řídící se rozdělením, jehož hustota pravděpodobnosti je rovna normovanému beta spektru z (a).}
+\label{fig:betaSpektrum_214Pb}
 \end{figure}
 \begin{figure}[H]
 	\centering
@@ -285,8 +291,35 @@ kde $1,6\times 10^{-13}$ je převodní faktor z MeV na Jouly, $\lambda$ je přem
 		\caption{}
 	\end{subfigure}
 	\caption{V (a) je originální beta spektrum \ce{^{214}Bi} přebrané z \cite{betaSpektrum}. V (b) je histogram $10^6$ realizací náhodné veličiny řídící se beta spektrem z (a).}
+	\label{fig:betaSpektrum_214Bi}
 \end{figure}
+\begin{table}[ht]
+	\centering
+	\caption{Střední energie $\beta$ spekter \ce{^{214}Pb} a \ce{^{214}Bi} vygenerované pomocí metody přijetí-zamítnutí. Maximální chyba určení střední energie je dle Čebyševovy nerovnosti rovna výrazu $\frac{\sigma}{\sqrt{N\cdot \varepsilon}}$, kde $\sigma$ je výběrová směrodatná odchylka, $N=10^6$ je počet vygenerovaných náhodných čísel a $\varepsilon=\num{0,01}$ je hladina významnosti. V posledním sloupci je maximální dosah elektronů s energií $E_{mean}$ přebraný z~\cite{estar}.}
+	\label{tab:stredniEnergie}
+	\begin{tabular}{lrrr}
+		\toprule
+		RN&$E_{mean}$ [\si{MeV}]&max. chyba [\si{MeV}]& $R_{max}$ [\si{cm}]\\
+		\midrule
+		\ce{^{214}Pb}&0,220&0,002&49\\
+		\ce{^{214}Bi}&0,639&0,005&231\\
+		\bottomrule
+	\end{tabular}
+\end{table}
+\subsubsection{Energetický příspěvek}
+%Při určení horní hranice příspěvku $\beta$ záření k dávce byly použity tedy tyto střední energie jejich příslušných spekter (propagace nejistot nebyla uvažována vzhledem k dosti aproximativnímu charakteru výpočtu) a algoritmus uvedený v \ref{navesti:algoritmus_nabiteCastice}. 
 
+Pokud použijeme model výpočtu z kapitoly~\ref{navesti:algoritmus_nabiteCastice}, pak dostaneme výsledky, které lze považovat za maximální odhad deponované energie, protože tento model neuvažuje rozptylování částic do jiných směrů letu než je původní směr letu nabité částice. V algoritmu nahradíme brzdné schopností alfa částic brzdnými schopnostmi elektronů se středními energiemi $\beta$ spekter \cite{estar} a dále je potřeba zavést korekci na fakt, že dosah těchto elektronů (viz tab.~\ref{tab:stredniEnergie}) je větší než rozměry sudu. To znamená, že původní algoritmus by generoval elektrony v místech mimo sud, což je nesmysl. Korekci lze odvodit následující úvahou: uvažujme sférickou slupku s poloměrem $r$ větším než poloměr sudu $R_{sud}$ a menším než polovina výšky sudu $h_{sud}/2$. Pak 
+
+Celkový energetický příspěvek čipu je roven
+\begin{equation}
+	E_{\beta}=\left(I_{Pb}+I_{Bi}\right)\cdot F\cdot a_0\,,
+\end{equation}
+se značením stejného významu jako v~\eqref{eq:energetickyPrispevek_integral}. Máme tedy podobně jako v~\eqref{eq:prispevek_alfa}
+\begin{empheq}[box=\mymath]{equation}
+	\overline{D}_{\beta}=\frac{1}{m_{cip}}E_{beta}\cdot 1,6\times 10^{-13}\frac{1-\exp(-\lambda T)}{\lambda}\,.\label{eq:prispevek_beta}
+\end{empheq}
+Čára nad $D_{\beta}$ značí, že se jedná o horní maximální odhad.
 \subsection{Příspěvek of $\gamma$}
 U $\gamma$ záření postupujeme podobným způsobem jako u $\alpha$ s tím rozdílem, že se zde nepočítá s brzdnými schopnostmi, ale s exponenciálním zeslabováním svazku
 \begin{align}
@@ -398,17 +431,25 @@ Celkový příspěvek od $\gamma$ záření k dávce je
 \begin{empheq}[box=\mymath]{equation}
 D_{\gamma}=D_{Rn}(511)+\sum_{E}D_{progenies}(E)
 \end{empheq}
-\subsection{Konkrétní hodnoty}
-Vypočítal jsem $D_{\alpha}$ a $D_{\gamma}$ pro $T=\SI{1}{den}$ a pro injektovanou koncentraci $a_0=\SI{1}{kBq\cdot m^{-3}}$:
+\subsection{Výsledky}
+Vypočítal jsem $D_{\alpha}, \overline{D}_{\beta}$ a $D_{\gamma}$ pro $T=\SI{1}{den}$ a pro injektovanou koncentraci $a_0=\SI{1}{kBq\cdot m^{-3}}$:
 \begin{align}
 	D_{\alpha}&=\SI{5.70}{\mu Gy}\,,\\
-	D_{\gamma}&=\SI{0.21}{\mu Gy}\,,\\
-	D_{celk}&=\SI{5.91}{\mu Gy}\,.
+	D_{\beta}&=\SI{0.66}{\mu Gy}\,,\\
+	D_{\gamma}&=\SI{0.21}{\mu Gy}\,,
 \end{align}
+což celkově číní
+\begin{equation}
+	D_{celk}=\SI{6.56}{\mu Gy}\,.
+\end{equation}
+\subsection{Diskuze}
+\subsection{Závěr}
 \begin{thebibliography}{Mm99}
 	\bibitem{astar} National Institute of Standards and Technology: aStar, Stopping-power and Range Tables for Helium Ions. 14. 5. 2019. Dostupné z \url{https://physics.nist.gov/PhysRefData/Star/Text/ASTAR.html}
 	\bibitem{srim} Ziegler, J. F.: SRIM - The Stopping and Range of Ions in Matter. 14. 5. 2019. Dostupné z \url{http://srim.org/} 
 	\bibitem{valcovesouradnice} Dawkins, P.: Section 1-12 : Cylindrical Coordinates. Citováno 17. 5. 2019. Dostupné z \url{http://tutorial.math.lamar.edu/Classes/CalcIII/CylindricalCoords.aspx}
 	\bibitem{betaSpektrum} Modeste Tchakoua Tchouaso: Odpověď na dotaz "How can I determine the energy spectrum of beta decay?" na webu ResearchGate. Citováno 4. 6. 2019. Dostupné z  \url{https://www.researchgate.net/post/How_can_I_determine_the_energy_spectrum_of_beta_decay}
+	\bibitem{rejection} Wikipedia, The Free Encyclopedia: Rejection sampling. Citováno 18. 6. 2019. \url{https://en.wikipedia.org/wiki/Rejection_sampling}
+	\bibitem{estar} National Institute of Standards and Technology: eStar, Stopping-power and Range Tables for electrons. 18. 6. 2019. Dostupné z \url{https://physics.nist.gov/PhysRefData/Star/Text/ESTAR.html}
 \end{thebibliography}
 \end{document}

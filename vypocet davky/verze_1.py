@@ -236,7 +236,7 @@ def D_gama(t):
 
 
 def D_beta(t):
-    I_E=np.array([1.7596, 7.60]) #ze skriptu bethe, z fce vypocet_alfa
+    I_E=np.array([1.7426, 7.07]) #ze skriptu bethe, z fce vypocet_alfa
     E=sum(I_E[:]*F)*a #vytezky jsou rovne v podstate jedne
     E_celkove=E*1.6*10**(-13)*(1-np.exp(-l0*t))/l0 #zahrnuti casoveho integralu
     return E_celkove/m_cip

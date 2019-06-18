@@ -14,6 +14,7 @@ import pandas as pd
 from konstanty import *
 import time
 import matplotlib.pyplot as plt
+import logging
 
 
 #Define some natural constants
@@ -66,7 +67,7 @@ dosah_alfa=np.array([R_alfa_spline(E) for E in E0_alfa])
 
 #------------------------------------------------------------------------------------------------
 #BETA
-E0_beta=np.array([0.219, 0.638]) #v MeV
+E0_beta=np.array([0.220, 0.639]) #v MeV
 data_beta=pd.read_csv('ESTAR vzduch.txt', skiprows = 8, sep="\t")
 data_beta_dosah=pd.read_csv('ESTAR vzduch dosah.txt', skiprows = 8, sep="\t")
 
@@ -84,8 +85,35 @@ def S_beta(E):
         return 0
 
 dosah_beta=np.array([R_beta_spline(E) for E in E0_beta])
+
+
 #------------------------------------------------------------------------------------------------
 
+def faktor_pruniku(s):
+    if s<=polomer_sudu:
+        return 1
+    elif s**2>polomer_sudu**2+(vyska_sudu/2)**2: #uvazovana kulova slupka je uplne mimo sud
+        print("Rozmer vetsi nez rozmery sudu, zadny prispevek.")
+        return 0
+    elif s>polomer_sudu and s<=vyska_sudu/2: #uvazovana kulova slupka je castecne mimo sud
+        h=s-polomer_sudu
+        faktor_pruniku=1-h/s
+        print("polomer slupky je vetsi nez polomer sudu, faktor pruniku = "+str(faktor_pruniku))
+        return faktor_pruniku
+    elif s>polomer_sudu and s>vyska_sudu/2:
+        #DORESIT!!!!
+        h1=s-polomer_sudu
+        h2=s-vyska_sudu/2
+        faktor_pruniku=1-h1/s-h2/s
+        print("polomer slupky je vetsi nez polomer sudu a nez polovina vysky sudu, faktor pruniku = "+str(faktor_pruniku))
+        if faktor_pruniku<0:
+            logging.error("faktoru pruniku je mensi nez nula!!!")
+            return False
+        return faktor_pruniku
+    else:
+        logging.error("nejaka chyba nebo nedotazenost ve funkci 'faktor_pruniku'!")
+        return False
+    
 def zbyla_energie(s, Ekin, fce, dx=1e-1):
     '''
     PRO JAKOUKOLIV NABITOU CASTICI
@@ -102,15 +130,9 @@ def zbyla_energie(s, Ekin, fce, dx=1e-1):
     dE=0     #energy loss in MeV
 #    print('Ekin = '+str(Ekin)+'MeV')
 #    print('delka drahy = '+str(s)+' cm')
-    faktor_pruniku=1
-    if s**2>=polomer_sudu**2+(vyska_sudu/2)**2: #uvazovana kulova slupka je uplne mimo sud
-        print("Rozmer vetsi nez rozmery sudu, zadny prispevek.")
-        return 0   
-    if s>polomer_sudu and s<vyska_sudu/2: #uvazovana kulova slupka je castecne mimo sud
-        faktor_pruniku=1-(1-polomer_sudu**2/s**2)**(3/2)
-        print("polomer slupky je vetsi nez polomer sudu, faktor pruniku = "+str(faktor_pruniku))
-#    elif s>polomer_sudu and s>vyska_sudu/2:
-        #DORESIT!!!!
+    faktorPruniku=faktor_pruniku(s)
+    if faktorPruniku==0:
+        return 0
     while True:
         x = x+dx
         if x > s:
@@ -131,7 +153,7 @@ def zbyla_energie(s, Ekin, fce, dx=1e-1):
 #    print(str(x-dx) + ', ' + str(Ekin) + ', ' + str(dE/dx)+'\n')
 #    f.close()
     E_zbyla = Ekin
-    return faktor_pruniku*E_zbyla
+    return faktorPruniku*E_zbyla
 
 def geometrie_nabiteCastice(s):
     '''
@@ -155,7 +177,9 @@ def vypocet(E0=E0_alfa, dosah=dosah_alfa, dx=1e-1):
     I_E_list=[]
     for i, Ekin0 in enumerate(E0):
         R_max = dosah[i] #[cm]
+        #!!!!! (fce brzdne schopnosti se zadava manualne sem! lepsi implementace hazela chybu)
         fce = lambda s: 4*np.pi*s**2*zbyla_energie(s, Ekin0, S_beta, dx=dx)*geometrie_nabiteCastice(s)
+        #!!!!!
         I_E = quad(fce, r_pouzdro, R_max+r_pouzdro) #integral vsech energii od povrchu pouzdra do dosahu
         I_E_list.append(I_E)
     return np.array(I_E_list)
@@ -163,7 +187,7 @@ def vypocet(E0=E0_alfa, dosah=dosah_alfa, dx=1e-1):
 
 I_E_beta=vypocet(E0=E0_beta, dosah=dosah_beta)
 #I_E_alfa=vypocet()
-I_E_beta_zaznam=np.array([[1.75963424e+00, 8.93746399e-04], [7.59730396e+00, 5.26641172e-02]])
+I_E_beta_zaznam=np.array([[1.72585526e+00, 2.76434966e-04], [7.05350163e+00, 1.85648118e-02]])
 E_zbyla=zbyla_energie(dosah_beta[1], E0_beta[1], fce=S_beta)
 
 #TO DO: pozor, beta ma vetsi dosah nez jsou rozmery sudu!!!! (zbyva udelat pripad r_sf>h/2, viz radek 113)

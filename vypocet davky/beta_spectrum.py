@@ -77,6 +77,9 @@ def graf_nahodnaCisla(nahodnaCisla):
     ax.set_ylabel('pocet [-]')
     ax.legend()
     ax.grid()
+    
+def maximalni_chyba(sigma, N=10**6, epsilon=0.01):
+    return sigma/np.sqrt(N*epsilon)
 
 nahodnaCisla_Pb=rejection_method(lambda E: spektrum(spline_Pb, E), maximum_Pb, df_Pb)
 #graf_spektrum(df_Pb, spline_Pb)
@@ -86,5 +89,16 @@ nahodnaCisla_Bi=rejection_method(lambda E: spektrum(spline_Bi, E), maximum_Bi, d
 #graf_spektrum(df_Bi, spline_Bi)
 #graf_nahodnaCisla(nahodnaCisla_Bi)
 
+E_Pb_mean=nahodnaCisla_Pb.mean()
+E_Bi_mean=nahodnaCisla_Bi.mean()
+
+E_Pb_sigma=nahodnaCisla_Pb.std()
+E_Bi_sigma=nahodnaCisla_Bi.std()
+
+E_Pb_error=maximalni_chyba(E_Pb_sigma)
+E_Bi_error=maximalni_chyba(E_Bi_sigma)
+
+
+#zaznamy
 E_Pb_stredni=0.21915398688762827 #v MeV
 E_Bi_stredni=0.6387920731310772  #v MeV
